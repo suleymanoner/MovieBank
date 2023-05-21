@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import MovieCard from '../components/MovieCard';
 import {ButtonWithIcon} from '../components/ButtonWithIcon';
+import {BTN_COLOR} from '../utils/Config';
 
 interface HomeScreenProps {
   movieReducer: MovieState;
@@ -18,6 +19,7 @@ interface HomeScreenProps {
 }
 
 const _HomeScreen: React.FC<HomeScreenProps> = ({
+  navigation,
   movieReducer,
   fetchMovies,
   fetchIndvMovie,
@@ -30,10 +32,6 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
   useEffect(() => {
     fetchMovies(page);
   }, [page]);
-
-  useEffect(() => {
-    fetchIndvMovie(315162);
-  }, []);
 
   const flatListRef = useRef(null);
   const [showButton, setShowButton] = useState(false);
@@ -65,6 +63,10 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
     }
   };
 
+  const goDetail = (id: number) => {
+    navigation.navigate('Detail', {mov_id: id});
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -77,6 +79,7 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
             title={item.title}
             vote={item.vote_average}
             date={item.release_date}
+            onPress={() => goDetail(item.id)}
           />
         )}
         onScroll={handleScroll}
@@ -87,18 +90,20 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
       {showButton && (
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <ButtonWithIcon
-            btnColor="gray"
-            height={50}
+            btnColor={BTN_COLOR}
+            height={40}
             onTap={decreasePage}
             title="Back"
             width={100}
+            txtColor="black"
           />
           <ButtonWithIcon
-            btnColor="gray"
-            height={50}
+            btnColor={BTN_COLOR}
+            height={40}
             onTap={increasePage}
             title="Next"
             width={100}
+            txtColor="black"
           />
         </View>
       )}
