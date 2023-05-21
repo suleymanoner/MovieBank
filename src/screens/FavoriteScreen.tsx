@@ -1,15 +1,58 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, FlatList} from 'react-native';
+import {ApplicationState, MovieState, onUnFavMovie} from '../redux';
+import {connect} from 'react-redux';
+import FavoriteCard from '../components/FavoriteCard';
 
-interface FavoriteScreenProps {}
+interface FavoriteScreenProps {
+  movieReducer: MovieState;
+  unFavMov: Function;
+}
 
-const FavoriteScreen: React.FC<FavoriteScreenProps> = ({}) => {
+const _FavoriteScreen: React.FC<FavoriteScreenProps> = ({
+  navigation,
+  movieReducer,
+  unFavMov,
+}) => {
+  const {fav_movies} = movieReducer;
+
+  console.log('Fav movies: ' + fav_movies);
+
+  const goDetail = (id: number) => {
+    navigation.navigate('Detail', {mov_id: id});
+  };
+
+  const unFav = (id: number) => {
+    unFavMov(id);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>FAVORITE SCREEN</Text>
+      <FlatList
+        data={fav_movies}
+        initialNumToRender={5}
+        renderItem={({item}) => (
+          <FavoriteCard
+            image={item.poster_path}
+            title={item.title}
+            unFavMovie={() => unFav(item.id)}
+            onPress={() => goDetail(item.id)}
+          />
+        )}
+      />
     </View>
   );
 };
+
+/**
+ *  <MovieCard
+          date={fav_movies.length > 0 ? fav_movies[0]?.release_date : ''}
+          image={fav_movies.length > 0 ? fav_movies[0]?.backdrop_path : ''}
+          onPress={() => {}}
+          title={fav_movies.length > 0 ? fav_movies[0]?.title : ''}
+          vote={fav_movies.length > 0 ? fav_movies[0]?.vote_average || 0 : 0}
+        />
+ */
 
 const styles = StyleSheet.create({
   container: {
@@ -27,5 +70,13 @@ const styles = StyleSheet.create({
     color: 'black',
   },
 });
+
+const mapToStateProps = (state: ApplicationState) => ({
+  movieReducer: state.movieReducer,
+});
+
+const FavoriteScreen = connect(mapToStateProps, {
+  unFavMov: onUnFavMovie,
+})(_FavoriteScreen);
 
 export {FavoriteScreen};
