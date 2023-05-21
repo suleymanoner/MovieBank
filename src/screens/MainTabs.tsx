@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {HomeScreen} from './HomeScreen';
 import {FavoriteScreen} from './FavoriteScreen';
 import {ProfileScreen} from './ProfileScreen';
+import {DetailScreen} from './DetailScreen';
 
 const HomeStack = createNativeStackNavigator();
 const FavoriteStack = createNativeStackNavigator();
@@ -15,6 +16,7 @@ const Tab = createMaterialBottomTabNavigator();
 const HomeStackScreen = () => (
   <HomeStack.Navigator screenOptions={{headerShown: false}}>
     <HomeStack.Screen name="Home" component={HomeScreen} />
+    <HomeStack.Screen name="Detail" component={DetailScreen} />
   </HomeStack.Navigator>
 );
 
@@ -31,16 +33,12 @@ const ProfileStackScreen = () => (
 );
 
 const MainTabScreen = () => (
-  <Tab.Navigator
-    initialRouteName="HomeStack"
-    activeColor="red"
-    barStyle={{backgroundColor: 'white'}}>
+  <Tab.Navigator initialRouteName="HomeStack">
     <Tab.Screen
       name="HomeStack"
       component={HomeStackScreen}
       options={{
         tabBarLabel: 'Home',
-        tabBarColor: 'yellow',
         tabBarIcon: ({color}) => <Icon name="home" color={color} size={26} />,
       }}
     />
@@ -49,7 +47,7 @@ const MainTabScreen = () => (
       component={FavoriteStackScreen}
       options={{
         tabBarLabel: 'Favorite',
-        tabBarColor: 'yellow',
+        tabBarColor: 'red',
         tabBarIcon: ({color}) => (
           <Icon name="cards-heart" color={color} size={26} />
         ),
@@ -60,7 +58,7 @@ const MainTabScreen = () => (
       component={ProfileStackScreen}
       options={{
         tabBarLabel: 'Profile',
-        tabBarColor: 'yellow',
+        tabBarColor: 'red',
         tabBarIcon: ({color}) => (
           <Icon name="account" color={color} size={26} />
         ),
