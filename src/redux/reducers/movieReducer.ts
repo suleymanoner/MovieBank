@@ -4,6 +4,7 @@ import {MovieState, Movie, IndvMovie} from '../models';
 const initialState: MovieState = {
   movies: [] as Movie[],
   indv_movie: {} as IndvMovie,
+  fav_movies: [] as Movie[],
 };
 
 const MovieReducer = (
@@ -21,6 +22,20 @@ const MovieReducer = (
       return {
         ...state,
         indv_movie: action.payload,
+      };
+
+    case 'FAV_MOVIE':
+      return {
+        ...state,
+        fav_movies: [...state.fav_movies, action.payload],
+      };
+
+    case 'UN_FAV_MOVIE':
+      return {
+        ...state,
+        fav_movies: state.fav_movies.filter(
+          movie => movie.id !== action.payload,
+        ),
       };
 
     default:

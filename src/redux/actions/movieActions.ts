@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {Dispatch} from 'react';
 import {API_KEY, BASE_URL, POPULAR_URL} from '../../utils/Config';
-import {IndvMovie, Response} from '../models';
+import {IndvMovie, Movie, Response} from '../models';
 
 export interface GetMovies {
   readonly type: 'GET_MOVIES';
@@ -13,7 +13,17 @@ export interface GetIndvMovie {
   payload: IndvMovie;
 }
 
-export type MovieAction = GetMovies | GetIndvMovie;
+export interface FavMovie {
+  readonly type: 'FAV_MOVIE';
+  payload: Movie;
+}
+
+export interface UnFavMovie {
+  readonly type: 'UN_FAV_MOVIE';
+  payload: number;
+}
+
+export type MovieAction = GetMovies | GetIndvMovie | FavMovie | UnFavMovie;
 
 export const onGetMovies = (page: number) => {
   return async (dispatch: Dispatch<MovieAction>) => {
@@ -45,6 +55,32 @@ export const onGetIndvMovie = (id: number) => {
           });
         })
         .catch(err => console.log(err));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const onFavMovie = (movie: Movie) => {
+  return async (dispatch: Dispatch<MovieAction>) => {
+    try {
+      dispatch({
+        type: 'FAV_MOVIE',
+        payload: movie,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const onUnFavMovie = (id: number) => {
+  return async (dispatch: Dispatch<MovieAction>) => {
+    try {
+      dispatch({
+        type: 'UN_FAV_MOVIE',
+        payload: id,
+      });
     } catch (error) {
       console.log(error);
     }
