@@ -1,8 +1,10 @@
-import React from 'react';
-import {View, Text, StyleSheet, FlatList} from 'react-native';
-import {ApplicationState, MovieState, onUnFavMovie} from '../redux';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, FlatList, Alert} from 'react-native';
+import {ApplicationState, MovieState, onUnFavMovie, Movie} from '../redux';
 import {connect} from 'react-redux';
 import FavoriteCard from '../components/FavoriteCard';
+import {showToast} from '../utils/showToast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface FavoriteScreenProps {
   movieReducer: MovieState;
@@ -14,28 +16,61 @@ const _FavoriteScreen: React.FC<FavoriteScreenProps> = ({
   movieReducer,
   unFavMov,
 }) => {
-  const {fav_movies} = movieReducer;
-
-  console.log('Fav movies: ' + fav_movies);
+  const [favoriteMovies, setFavoriteMovies] = useState<Movie[]>([]);
 
   const goDetail = (id: number) => {
     navigation.navigate('Detail', {mov_id: id});
   };
 
-  const unFav = (id: number) => {
-    unFavMov(id);
+  const unFav = (id: number, title: string) => {
+    Alert.alert(
+      `Unfav the ${title}?`,
+      'Are you sure to unfavorite this movie?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => showToast('Unfav cancelled!'),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            unFavMov(id);
+            showToast(`${title} unfaved!`);
+          },
+        },
+      ],
+    );
   };
+
+  const getFavoriteMovies = async () => {
+    try {
+      const existingFavMovies = await AsyncStorage.getItem('fav_movies');
+      if (existingFavMovies) {
+        const parsedFavMovies = JSON.parse(existingFavMovies);
+        setFavoriteMovies(parsedFavMovies);
+      } else {
+        await AsyncStorage.setItem('fav_movies', JSON.stringify([]));
+      }
+    } catch (error) {
+      console.log('Error: ' + error);
+    }
+  };
+
+  useEffect(() => {
+    getFavoriteMovies();
+  }, [favoriteMovies]);
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={fav_movies}
+        data={favoriteMovies}
         initialNumToRender={5}
         renderItem={({item}) => (
           <FavoriteCard
             image={item.poster_path}
             title={item.title}
-            unFavMovie={() => unFav(item.id)}
+            unFavMovie={() => unFav(item.id, item.title)}
             onPress={() => goDetail(item.id)}
           />
         )}

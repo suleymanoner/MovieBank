@@ -2,6 +2,7 @@ import axios from 'axios';
 import {Dispatch} from 'react';
 import {API_KEY, BASE_URL, POPULAR_URL} from '../../utils/Config';
 import {IndvMovie, Movie, Response} from '../models';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface GetMovies {
   readonly type: 'GET_MOVIES';
@@ -64,6 +65,11 @@ export const onGetIndvMovie = (id: number) => {
 export const onFavMovie = (movie: Movie) => {
   return async (dispatch: Dispatch<MovieAction>) => {
     try {
+      const existingFavMovies = await AsyncStorage.getItem('fav_movies');
+      const favMovies = existingFavMovies ? JSON.parse(existingFavMovies) : [];
+      favMovies.push(movie);
+      await AsyncStorage.setItem('fav_movies', JSON.stringify(favMovies));
+
       dispatch({
         type: 'FAV_MOVIE',
         payload: movie,
@@ -77,6 +83,15 @@ export const onFavMovie = (movie: Movie) => {
 export const onUnFavMovie = (id: number) => {
   return async (dispatch: Dispatch<MovieAction>) => {
     try {
+      const existingFavMovies = await AsyncStorage.getItem('fav_movies');
+      const favMovies = existingFavMovies ? JSON.parse(existingFavMovies) : [];
+      const index = favMovies.findIndex((movie: Movie) => movie.id === id);
+
+      if (index !== -1) {
+        favMovies.splice(index, 1);
+        await AsyncStorage.setItem('fav_movies', JSON.stringify(favMovies));
+      }
+
       dispatch({
         type: 'UN_FAV_MOVIE',
         payload: id,

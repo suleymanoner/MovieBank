@@ -11,6 +11,8 @@ import axios from 'axios';
 import MovieCard from '../components/MovieCard';
 import {ButtonWithIcon} from '../components/ButtonWithIcon';
 import {BTN_COLOR} from '../utils/Config';
+import {showToast} from '../utils/showToast';
+import MovieCardNew from '../components/MovieCardNew';
 
 interface HomeScreenProps {
   movieReducer: MovieState;
@@ -50,6 +52,7 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
       setPage(page - 1);
     } else {
       // show toast 'you are already in the first page!'
+      showToast('You are already in first page!');
     }
     if (flatListRef.current) {
       flatListRef.current.scrollToIndex({index: 0, animated: true});
@@ -70,11 +73,11 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
   return (
     <View style={styles.container}>
       <FlatList
-        ref={flatListRef}
+        keyExtractor={item => item.id.toString()}
         data={movies}
         initialNumToRender={5}
         renderItem={({item}) => (
-          <MovieCard
+          <MovieCardNew
             image={item.poster_path}
             title={item.title}
             vote={item.vote_average}
@@ -82,13 +85,9 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
             onPress={() => goDetail(item.id)}
           />
         )}
-        onScroll={handleScroll}
-        onEndReachedThreshold={0.1}
-        onEndReached={() => setShowButton(true)}
-        contentContainerStyle={styles.listContent}
       />
       {showButton && (
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={styles.btn_container}>
           <ButtonWithIcon
             btnColor={BTN_COLOR}
             height={40}
@@ -116,7 +115,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-
   listContent: {
     flexGrow: 1,
   },
@@ -125,6 +123,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
+  },
+  btn_container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'lightgray',
   },
   text: {
     fontSize: 30,
