@@ -46,7 +46,7 @@ const MainTabScreen = () => (
       name="FavoriteStack"
       component={FavoriteStackScreen}
       options={{
-        tabBarLabel: 'Favorite',
+        tabBarLabel: 'Favorites',
         tabBarColor: 'red',
         tabBarIcon: ({color}) => (
           <Icon name="cards-heart" color={color} size={26} />
