@@ -11,6 +11,7 @@ import {ApplicationState, MovieState, onSearchMovie} from '../redux';
 import {connect} from 'react-redux';
 import FavoriteCard from '../components/FavoriteCard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {BACKGROUND_COLOR} from '../utils/Config';
 
 interface FavoriteScreenProps {
   movieReducer: MovieState;
@@ -57,8 +58,7 @@ const _SearchScreen: React.FC<FavoriteScreenProps> = ({
           renderItem={({item}) => (
             <FavoriteCard
               image={item.poster_path}
-              title={item.title}
-              unFavMovie={() => {}}
+              title={item.original_title}
               search={true}
               onPress={() => goDetail(item.id)}
             />
@@ -74,7 +74,7 @@ const _SearchScreen: React.FC<FavoriteScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E4E4E4',
+    backgroundColor: BACKGROUND_COLOR,
   },
   top_container: {
     flexDirection: 'row',

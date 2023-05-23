@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import {BASE_IMG_URL} from '../utils/Config';
 import moment from 'moment';
@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F0F0',
     borderRadius: 8,
     padding: 10,
+    margin: 3,
   },
   image: {
     width: 80,
@@ -75,7 +76,6 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     color: 'gray',
-    marginRight: 10,
   },
   voteContainer: {
     flexDirection: 'row',
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
   voteText: {
     fontSize: 14,
-    marginRight: 0,
+    fontWeight: 'bold',
   },
   voteLabel: {
     fontSize: 14,

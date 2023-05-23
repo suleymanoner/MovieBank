@@ -6371,7 +6371,7 @@
   "resolved" "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.70.3.tgz"
   "version" "0.70.3"
 
-"react-native-paper@>= 3.0.0":
+"react-native-paper@^5.8.0", "react-native-paper@>= 3.0.0":
   "integrity" "sha512-Mde8KkWt+9VD+KMqGK5VyTskJLZCsF/gAQQxoLgRlC2C8RmVPgyG0xhgu1sD3ED7T7FewE8cKrQm+soB9FAD1Q=="
   "resolved" "https://registry.npmjs.org/react-native-paper/-/react-native-paper-5.8.0.tgz"
   "version" "5.8.0"

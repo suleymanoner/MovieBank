@@ -14,7 +14,7 @@ interface FavoriteCardProps {
   image: string;
   title: string;
   onPress: () => void;
-  unFavMovie: () => void;
+  unFavMovie?: () => void;
   search?: boolean;
 }
 
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: '#A4A4A4',
   },
   image: {
     width: 80,

@@ -10,7 +10,7 @@ import {
 import axios from 'axios';
 import MovieCard from '../components/MovieCard';
 import {ButtonWithIcon} from '../components/ButtonWithIcon';
-import {BTN_COLOR} from '../utils/Config';
+import {BACKGROUND_COLOR, BTN_COLOR} from '../utils/Config';
 import {showToast} from '../utils/showToast';
 import MovieCardNew from '../components/MovieCardNew';
 
@@ -77,7 +77,7 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
         renderItem={({item}) => (
           <MovieCardNew
             image={item.poster_path}
-            title={item.title}
+            title={item.original_title}
             vote={item.vote_average}
             date={item.release_date}
             onPress={() => goDetail(item.id)}
@@ -111,7 +111,7 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: BACKGROUND_COLOR,
   },
   listContent: {
     flexGrow: 1,
@@ -129,10 +129,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: 'lightgray',
-  },
-  text: {
-    fontSize: 30,
-    color: 'black',
   },
 });
 

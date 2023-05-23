@@ -3,6 +3,7 @@ import {Dispatch} from 'react';
 import {API_KEY, BASE_URL, POPULAR_URL, SEARCH_URL} from '../../utils/Config';
 import {IndvMovie, Movie, Response} from '../models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {showToast} from '../../utils/showToast';
 
 export interface GetMovies {
   readonly type: 'GET_MOVIES';
@@ -95,13 +96,21 @@ export const onFavMovie = (movie: Movie) => {
     try {
       const existingFavMovies = await AsyncStorage.getItem('fav_movies');
       const favMovies = existingFavMovies ? JSON.parse(existingFavMovies) : [];
-      favMovies.push(movie);
-      await AsyncStorage.setItem('fav_movies', JSON.stringify(favMovies));
 
-      dispatch({
-        type: 'FAV_MOVIE',
-        payload: movie,
-      });
+      const isAlreadyFav = favMovies.some(mov => mov.id === movie.id);
+      if (isAlreadyFav) {
+        showToast(`${movie.original_title} is already faved!`);
+        return;
+      } else {
+        favMovies.push(movie);
+        await AsyncStorage.setItem('fav_movies', JSON.stringify(favMovies));
+
+        dispatch({
+          type: 'FAV_MOVIE',
+          payload: movie,
+        });
+        showToast(`${movie.original_title} faved!`);
+      }
     } catch (error) {
       console.log(error);
     }

@@ -7,6 +7,7 @@ import {FavoriteScreen} from './FavoriteScreen';
 import {ProfileScreen} from './ProfileScreen';
 import {DetailScreen} from './DetailScreen';
 import {SearchScreen} from './SearchScreen';
+import {BACKGROUND_COLOR} from '../utils/Config';
 
 const HomeStack = createNativeStackNavigator();
 const FavoriteStack = createNativeStackNavigator();
@@ -25,12 +26,14 @@ const HomeStackScreen = () => (
 const FavoriteStackScreen = () => (
   <FavoriteStack.Navigator screenOptions={{headerShown: false}}>
     <FavoriteStack.Screen name="Favorites" component={FavoriteScreen} />
+    <FavoriteStack.Screen name="Detail" component={DetailScreen} />
   </FavoriteStack.Navigator>
 );
 
 const SearchStackScreen = () => (
   <SearchStack.Navigator screenOptions={{headerShown: false}}>
     <SearchStack.Screen name="Search" component={SearchScreen} />
+    <SearchStack.Screen name="Detail" component={DetailScreen} />
   </SearchStack.Navigator>
 );
 
@@ -41,7 +44,14 @@ const ProfileStackScreen = () => (
 );
 
 const MainTabScreen = () => (
-  <Tab.Navigator initialRouteName="HomeStack">
+  <Tab.Navigator
+    initialRouteName="HomeStack"
+    activeColor="black"
+    backBehavior="history"
+    shifting={true}
+    compact={true}
+    labeled={false}
+    barStyle={{backgroundColor: '#FF8C8C', elevation: 0}}>
     <Tab.Screen
       name="HomeStack"
       component={HomeStackScreen}
@@ -55,7 +65,6 @@ const MainTabScreen = () => (
       component={FavoriteStackScreen}
       options={{
         tabBarLabel: 'Favorites',
-        tabBarColor: 'red',
         tabBarIcon: ({color}) => (
           <Icon name="cards-heart" color={color} size={26} />
         ),
@@ -66,7 +75,6 @@ const MainTabScreen = () => (
       component={SearchStackScreen}
       options={{
         tabBarLabel: 'Search',
-        tabBarColor: 'red',
         tabBarIcon: ({color}) => (
           <Icon name="magnify" color={color} size={26} />
         ),
@@ -77,7 +85,6 @@ const MainTabScreen = () => (
       component={ProfileStackScreen}
       options={{
         tabBarLabel: 'Profile',
-        tabBarColor: 'red',
         tabBarIcon: ({color}) => (
           <Icon name="account" color={color} size={26} />
         ),

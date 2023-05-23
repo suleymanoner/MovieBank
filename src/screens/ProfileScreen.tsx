@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
+import {BACKGROUND_COLOR} from '../utils/Config';
 
 interface ProfileScreenProps {}
 
@@ -14,7 +15,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E4E4E4',
+    backgroundColor: BACKGROUND_COLOR,
   },
   top_container: {
     flexDirection: 'row',

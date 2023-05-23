@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import FavoriteCard from '../components/FavoriteCard';
 import {showToast} from '../utils/showToast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BACKGROUND_COLOR } from '../utils/Config';
 
 interface FavoriteScreenProps {
   movieReducer: MovieState;
@@ -69,7 +70,7 @@ const _FavoriteScreen: React.FC<FavoriteScreenProps> = ({
         renderItem={({item}) => (
           <FavoriteCard
             image={item.poster_path}
-            title={item.title}
+            title={item.original_title}
             unFavMovie={() => unFav(item.id, item.title)}
             onPress={() => goDetail(item.id)}
           />
@@ -79,20 +80,10 @@ const _FavoriteScreen: React.FC<FavoriteScreenProps> = ({
   );
 };
 
-/**
- *  <MovieCard
-          date={fav_movies.length > 0 ? fav_movies[0]?.release_date : ''}
-          image={fav_movies.length > 0 ? fav_movies[0]?.backdrop_path : ''}
-          onPress={() => {}}
-          title={fav_movies.length > 0 ? fav_movies[0]?.title : ''}
-          vote={fav_movies.length > 0 ? fav_movies[0]?.vote_average || 0 : 0}
-        />
- */
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E4E4E4',
+    backgroundColor: BACKGROUND_COLOR,
   },
   top_container: {
     flexDirection: 'row',

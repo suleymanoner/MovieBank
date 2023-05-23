@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -15,10 +15,9 @@ import {
   onGetIndvMovie,
   onFavMovie,
 } from '../redux';
-import {BASE_IMG_URL, BTN_COLOR} from '../utils/Config';
+import {BACKGROUND_COLOR, BASE_IMG_URL, BTN_COLOR} from '../utils/Config';
 import {ButtonWithIcon} from '../components/ButtonWithIcon';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {showToast} from '../utils/showToast';
 
 interface DetailScreenProps {
   route: any;
@@ -35,7 +34,7 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
   favMovie,
 }) => {
   const {mov_id} = route.params;
-  const {indv_movie, fav_movies} = movieReducer;
+  const {indv_movie} = movieReducer;
   const genreNames: string[] = [];
   const spokenLanguages: string[] = [];
 
@@ -78,21 +77,14 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
 
   useEffect(() => {
     fetchIndvMovie(mov_id);
-  }, [mov_id]);
+  }, [mov_id, fetchIndvMovie]);
 
-  const handleFav = async (id: number, title: string) => {
-    const isAlreadyFav = fav_movies.some(mov => mov.id === id);
-
-    if (isAlreadyFav) {
-      showToast(`${title} is already faved!`);
-    } else {
-      await favMovie(indv_movie);
-      showToast(`${title} faved!`);
-    }
+  const handleFav = async () => {
+    await favMovie(indv_movie);
   };
 
   return (
-    <ScrollView>
+    <ScrollView style={{backgroundColor: BACKGROUND_COLOR}}>
       <View style={styles.container}>
         <Image
           source={{uri: BASE_IMG_URL + indv_movie.backdrop_path}}
@@ -104,10 +96,10 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
               <Icon name="keyboard-backspace" color="black" size={30} />
             </TouchableOpacity>
             <View style={styles.title_container}>
-              <Text style={styles.title}>{indv_movie.title}</Text>
+              <Text style={styles.title}>{indv_movie.original_title}</Text>
             </View>
             <TouchableOpacity
-              onPress={() => handleFav(indv_movie.id, indv_movie.title)}
+              onPress={() => handleFav()}
               style={styles.favoriteButton}>
               <Icon name="cards-heart" color="black" size={25} />
             </TouchableOpacity>
@@ -127,22 +119,30 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
             <Text style={styles.infoValue}>{spokenLanguages.join(', ')}</Text>
           </View>
           <View style={styles.buttonContainer}>
-            <ButtonWithIcon
-              btnColor={BTN_COLOR}
-              height={40}
-              onTap={() => goWebsite('homepage', indv_movie.homepage)}
-              title="Website"
-              width={120}
-              txtColor="black"
-            />
-            <ButtonWithIcon
-              btnColor={'#f3ce13'}
-              height={40}
-              onTap={() => goWebsite('imdb', indv_movie.homepage)}
-              title="IMDB"
-              width={120}
-              txtColor="black"
-            />
+            {indv_movie.homepage ? (
+              <ButtonWithIcon
+                btnColor={BTN_COLOR}
+                height={40}
+                onTap={() => goWebsite('homepage', indv_movie.homepage)}
+                title="Website"
+                width={120}
+                txtColor="black"
+              />
+            ) : (
+              <></>
+            )}
+            {indv_movie.imdb_id ? (
+              <ButtonWithIcon
+                btnColor={'#f3ce13'}
+                height={40}
+                onTap={() => goWebsite('imdb', indv_movie.imdb_id)}
+                title="IMDb"
+                width={120}
+                txtColor="black"
+              />
+            ) : (
+              <></>
+            )}
           </View>
         </View>
       </View>
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginTop: 20,
   },
   tagline: {
