@@ -29,8 +29,6 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
   const {movies, indv_movie} = movieReducer;
   const [page, setPage] = useState<number>(1);
 
-  //console.log(movies[0]);
-
   useEffect(() => {
     fetchMovies(page);
   }, [page]);

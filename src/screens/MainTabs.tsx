@@ -6,9 +6,11 @@ import {HomeScreen} from './HomeScreen';
 import {FavoriteScreen} from './FavoriteScreen';
 import {ProfileScreen} from './ProfileScreen';
 import {DetailScreen} from './DetailScreen';
+import {SearchScreen} from './SearchScreen';
 
 const HomeStack = createNativeStackNavigator();
 const FavoriteStack = createNativeStackNavigator();
+const SearchStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 
 const Tab = createMaterialBottomTabNavigator();
@@ -24,6 +26,12 @@ const FavoriteStackScreen = () => (
   <FavoriteStack.Navigator screenOptions={{headerShown: false}}>
     <FavoriteStack.Screen name="Favorites" component={FavoriteScreen} />
   </FavoriteStack.Navigator>
+);
+
+const SearchStackScreen = () => (
+  <SearchStack.Navigator screenOptions={{headerShown: false}}>
+    <SearchStack.Screen name="Search" component={SearchScreen} />
+  </SearchStack.Navigator>
 );
 
 const ProfileStackScreen = () => (
@@ -50,6 +58,17 @@ const MainTabScreen = () => (
         tabBarColor: 'red',
         tabBarIcon: ({color}) => (
           <Icon name="cards-heart" color={color} size={26} />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="SearchStack"
+      component={SearchStackScreen}
+      options={{
+        tabBarLabel: 'Search',
+        tabBarColor: 'red',
+        tabBarIcon: ({color}) => (
+          <Icon name="magnify" color={color} size={26} />
         ),
       }}
     />

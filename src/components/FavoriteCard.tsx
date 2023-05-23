@@ -15,6 +15,7 @@ interface FavoriteCardProps {
   title: string;
   onPress: () => void;
   unFavMovie: () => void;
+  search?: boolean;
 }
 
 const FavoriteCard: React.FC<FavoriteCardProps> = ({
@@ -22,6 +23,7 @@ const FavoriteCard: React.FC<FavoriteCardProps> = ({
   title,
   onPress,
   unFavMovie,
+  search,
 }) => {
   return (
     <TouchableOpacity onPress={onPress}>
@@ -31,9 +33,13 @@ const FavoriteCard: React.FC<FavoriteCardProps> = ({
           <View style={{flex: 1}}>
             <Text style={styles.title}>{title}</Text>
           </View>
-          <TouchableOpacity onPress={unFavMovie} style={styles.deleteButton}>
-            <Icon name="close-thick" color="black" size={25} />
-          </TouchableOpacity>
+          {search ? (
+            <></>
+          ) : (
+            <TouchableOpacity onPress={unFavMovie} style={styles.deleteButton}>
+              <Icon name="close-thick" color="black" size={25} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </TouchableOpacity>

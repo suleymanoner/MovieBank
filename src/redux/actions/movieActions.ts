@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {Dispatch} from 'react';
-import {API_KEY, BASE_URL, POPULAR_URL} from '../../utils/Config';
+import {API_KEY, BASE_URL, POPULAR_URL, SEARCH_URL} from '../../utils/Config';
 import {IndvMovie, Movie, Response} from '../models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -14,6 +14,11 @@ export interface GetIndvMovie {
   payload: IndvMovie;
 }
 
+export interface GetSearchResults {
+  readonly type: 'GET_SEARCH_RESULTS';
+  payload: Response;
+}
+
 export interface FavMovie {
   readonly type: 'FAV_MOVIE';
   payload: Movie;
@@ -24,7 +29,12 @@ export interface UnFavMovie {
   payload: number;
 }
 
-export type MovieAction = GetMovies | GetIndvMovie | FavMovie | UnFavMovie;
+export type MovieAction =
+  | GetMovies
+  | GetIndvMovie
+  | GetSearchResults
+  | FavMovie
+  | UnFavMovie;
 
 export const onGetMovies = (page: number) => {
   return async (dispatch: Dispatch<MovieAction>) => {
@@ -48,10 +58,28 @@ export const onGetIndvMovie = (id: number) => {
   return async (dispatch: Dispatch<MovieAction>) => {
     try {
       await axios
-        .get<IndvMovie>(BASE_URL + `${id}?` + API_KEY)
+        .get<IndvMovie>(BASE_URL + `movie/${id}?` + API_KEY)
         .then(response => {
           dispatch({
             type: 'GET_INDV_MOVIE',
+            payload: response.data,
+          });
+        })
+        .catch(err => console.log(err));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const onSearchMovie = (query: string) => {
+  return async (dispatch: Dispatch<MovieAction>) => {
+    try {
+      await axios
+        .get<Response>(SEARCH_URL + `&query=${query}`)
+        .then(response => {
+          dispatch({
+            type: 'GET_SEARCH_RESULTS',
             payload: response.data,
           });
         })

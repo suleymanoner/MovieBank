@@ -25,6 +25,7 @@ export interface Movie {
 export interface MovieState {
   movies: Movie[];
   indv_movie: IndvMovie;
+  search_results: Movie[];
   fav_movies: Movie[];
 }
 

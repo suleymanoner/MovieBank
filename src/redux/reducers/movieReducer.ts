@@ -4,6 +4,7 @@ import {MovieState, Movie, IndvMovie} from '../models';
 const initialState: MovieState = {
   movies: [] as Movie[],
   indv_movie: {} as IndvMovie,
+  search_results: [] as Movie[],
   fav_movies: [] as Movie[],
 };
 
@@ -22,6 +23,12 @@ const MovieReducer = (
       return {
         ...state,
         indv_movie: action.payload,
+      };
+
+    case 'GET_SEARCH_RESULTS':
+      return {
+        ...state,
+        search_results: action.payload.results,
       };
 
     case 'FAV_MOVIE':
