@@ -26,20 +26,15 @@ const FavoriteCard: React.FC<FavoriteCardProps> = ({
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.container}>
-        <View style={styles.img_container}>
-          <Image
-            source={{uri: BASE_IMG_URL + image}}
-            style={styles.movie_img}
-          />
+        <Image source={{uri: BASE_IMG_URL + image}} style={styles.image} />
+        <View style={styles.content}>
+          <View style={{flex: 1}}>
+            <Text style={styles.title}>{title}</Text>
+          </View>
+          <TouchableOpacity onPress={unFavMovie} style={styles.deleteButton}>
+            <Icon name="close-thick" color="black" size={25} />
+          </TouchableOpacity>
         </View>
-        <View style={styles.title_container}>
-          <Text style={styles.title}>{title}</Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => unFavMovie()}
-          style={styles.un_fav_btn}>
-          <Icon name="delete" color="black" size={25} />
-        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
@@ -47,37 +42,32 @@ const FavoriteCard: React.FC<FavoriteCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderColor: 'black',
-    borderWidth: 2,
-    padding: 5,
-    borderRadius: 10,
     flexDirection: 'row',
-    margin: 5,
-  },
-  title_container: {
-    flex: 1,
-    alignSelf: 'center',
     alignItems: 'center',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
-  img_container: {
-    alignSelf: 'center',
-  },
-  movie_img: {
-    width: 150,
-    height: Dimensions.get('window').height / 5,
-    borderRadius: 10,
+  image: {
+    width: 80,
+    height: 100,
     resizeMode: 'contain',
+    borderRadius: 8,
+  },
+  content: {
+    flex: 1,
+    marginLeft: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   title: {
-    fontSize: 23,
+    fontSize: 16,
+    fontWeight: 'bold',
     color: 'black',
-    textAlign: 'center',
-    fontWeight: '800',
   },
-  un_fav_btn: {
-    marginRight: 5,
-    alignSelf: 'center',
-    alignItems: 'center',
+  deleteButton: {
+    padding: 5,
   },
 });
 
