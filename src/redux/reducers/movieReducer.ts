@@ -16,7 +16,7 @@ const MovieReducer = (
     case 'GET_MOVIES':
       return {
         ...state,
-        movies: action.payload.results,
+        movies: [...state.movies, ...action.payload.results],
       };
 
     case 'GET_INDV_MOVIE':

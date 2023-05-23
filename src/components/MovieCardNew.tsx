@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {memo} from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import {BASE_IMG_URL} from '../utils/Config';
 import moment from 'moment';
@@ -91,4 +91,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MovieCardNew;
+export default memo(MovieCardNew);

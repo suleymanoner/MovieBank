@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, StyleSheet, FlatList} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet, FlatList} from 'react-native';
 import {connect} from 'react-redux';
 import {
   ApplicationState,
@@ -7,11 +7,7 @@ import {
   onGetMovies,
   onGetIndvMovie,
 } from '../redux';
-import axios from 'axios';
-import MovieCard from '../components/MovieCard';
-import {ButtonWithIcon} from '../components/ButtonWithIcon';
-import {BACKGROUND_COLOR, BTN_COLOR} from '../utils/Config';
-import {showToast} from '../utils/showToast';
+import {BACKGROUND_COLOR} from '../utils/Config';
 import MovieCardNew from '../components/MovieCardNew';
 
 interface HomeScreenProps {
@@ -24,45 +20,13 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
   navigation,
   movieReducer,
   fetchMovies,
-  fetchIndvMovie,
 }) => {
-  const {movies, indv_movie} = movieReducer;
+  const {movies} = movieReducer;
   const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
     fetchMovies(page);
-  }, [page]);
-
-  const flatListRef = useRef(null);
-  const [showButton, setShowButton] = useState(false);
-
-  const handleScroll = event => {
-    const {contentOffset, layoutMeasurement, contentSize} = event.nativeEvent;
-    const paddingToBottom = 20;
-    setShowButton(
-      contentOffset.y + layoutMeasurement.height >=
-        contentSize.height - paddingToBottom,
-    );
-  };
-
-  const decreasePage = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    } else {
-      // show toast 'you are already in the first page!'
-      showToast('You are already in first page!');
-    }
-    if (flatListRef.current) {
-      flatListRef.current.scrollToIndex({index: 0, animated: true});
-    }
-  };
-
-  const increasePage = () => {
-    setPage(page + 1);
-    if (flatListRef.current) {
-      flatListRef.current.scrollToIndex({index: 0, animated: true});
-    }
-  };
+  }, [page, fetchMovies]);
 
   const goDetail = (id: number) => {
     navigation.navigate('Detail', {mov_id: id});
@@ -84,30 +48,11 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
               onPress={() => goDetail(item.id)}
             />
           )}
+          onEndReached={() => setPage(page + 1)}
+          onEndReachedThreshold={0.5}
         />
       ) : (
         <></>
-      )}
-
-      {showButton && (
-        <View style={styles.btn_container}>
-          <ButtonWithIcon
-            btnColor={BTN_COLOR}
-            height={40}
-            onTap={decreasePage}
-            title="Back"
-            width={100}
-            txtColor="black"
-          />
-          <ButtonWithIcon
-            btnColor={BTN_COLOR}
-            height={40}
-            onTap={increasePage}
-            title="Next"
-            width={100}
-            txtColor="black"
-          />
-        </View>
       )}
     </View>
   );
@@ -143,7 +88,6 @@ const mapToStateProps = (state: ApplicationState) => ({
 
 const HomeScreen = connect(mapToStateProps, {
   fetchMovies: onGetMovies,
-  fetchIndvMovie: onGetIndvMovie,
 })(_HomeScreen);
 
 export {HomeScreen};
