@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   Image,
   ScrollView,
   Linking,
@@ -19,7 +18,7 @@ import {
 import {BASE_IMG_URL, BTN_COLOR} from '../utils/Config';
 import {ButtonWithIcon} from '../components/ButtonWithIcon';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import MovieCard from '../components/MovieCard';
+import {showToast} from '../utils/showToast';
 
 interface DetailScreenProps {
   route: any;
@@ -37,26 +36,22 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
 }) => {
   const {mov_id} = route.params;
   const {indv_movie, fav_movies} = movieReducer;
-
   const genreNames: string[] = [];
-  const getGenreNames = () => {
+  const spokenLanguages: string[] = [];
+
+  const getGenresAndLanguages = () => {
     if (indv_movie.genres) {
       indv_movie.genres.map(genre => {
-        genreNames.push(genre.name + ' ');
+        genreNames.push(genre.name);
       });
     }
-  };
-  getGenreNames();
-
-  const spokenLanguages: string[] = [];
-  const getSpokenLanguages = () => {
     if (indv_movie.spoken_languages) {
       indv_movie.spoken_languages.map(lan => {
-        spokenLanguages.push(lan.english_name + ' ');
+        spokenLanguages.push(lan.english_name);
       });
     }
   };
-  getSpokenLanguages();
+  getGenresAndLanguages();
 
   const goWebsite = async (type: string, link: string) => {
     if (type === 'homepage') {
@@ -85,76 +80,70 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
     fetchIndvMovie(mov_id);
   }, [mov_id]);
 
-  const handleFav = (id: number) => {
+  const handleFav = async (id: number, title: string) => {
     const isAlreadyFav = fav_movies.some(mov => mov.id === id);
 
     if (isAlreadyFav) {
-      console.log('Already faved!'); // show toast here
+      showToast(`${title} is already faved!`);
     } else {
-      favMovie(indv_movie);
+      await favMovie(indv_movie);
+      showToast(`${title} faved!`);
     }
   };
 
   return (
     <ScrollView>
       <View style={styles.container}>
-        <View style={styles.top_container}>
-          <TouchableOpacity onPress={goBack} style={styles.back_btn}>
-            <Icon name="keyboard-backspace" color="black" size={30} />
-          </TouchableOpacity>
-          <View style={styles.title_container}>
-            <Text style={styles.title}>{indv_movie.title}</Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => handleFav(indv_movie.id)}
-            style={styles.fav_btn}>
-            <Icon name="cards-heart" color="black" size={25} />
-          </TouchableOpacity>
-        </View>
-
-        {indv_movie.tagline ? (
-          <Text style={styles.tagline}>[{indv_movie.tagline}]</Text>
-        ) : (
-          <></>
-        )}
         <Image
           source={{uri: BASE_IMG_URL + indv_movie.backdrop_path}}
-          style={styles.movie_img}
+          style={styles.image}
         />
-        <Text style={styles.overview}>{indv_movie.overview}</Text>
-        <View style={styles.genre_container}>
-          <Text style={[styles.genre, {fontWeight: '800'}]}>-Genres-</Text>
-          <Text style={styles.genre}>{genreNames}</Text>
-        </View>
-        <View style={styles.genre_container}>
-          <Text style={[styles.genre, {fontWeight: '800'}]}>-Languages-</Text>
-          <Text style={styles.genre}>{spokenLanguages}</Text>
-        </View>
-        <View style={styles.btn_container}>
-          {indv_movie.homepage ? (
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={goBack}>
+              <Icon name="keyboard-backspace" color="black" size={30} />
+            </TouchableOpacity>
+            <View style={styles.title_container}>
+              <Text style={styles.title}>{indv_movie.title}</Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => handleFav(indv_movie.id, indv_movie.title)}
+              style={styles.favoriteButton}>
+              <Icon name="cards-heart" color="black" size={25} />
+            </TouchableOpacity>
+          </View>
+          {indv_movie.tagline ? (
+            <Text style={styles.tagline}>[{indv_movie.tagline}]</Text>
+          ) : (
+            <></>
+          )}
+          <Text style={styles.overview}>{indv_movie.overview}</Text>
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Genres:</Text>
+            <Text style={styles.infoValue}>{genreNames.join(', ')}</Text>
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Languages:</Text>
+            <Text style={styles.infoValue}>{spokenLanguages.join(', ')}</Text>
+          </View>
+          <View style={styles.buttonContainer}>
             <ButtonWithIcon
               btnColor={BTN_COLOR}
               height={40}
-              width={100}
-              title="Website"
               onTap={() => goWebsite('homepage', indv_movie.homepage)}
+              title="Website"
+              width={120}
               txtColor="black"
             />
-          ) : (
-            <></>
-          )}
-          {indv_movie.imdb_id ? (
             <ButtonWithIcon
-              btnColor="#f3ce13"
+              btnColor={'#f3ce13'}
               height={40}
-              width={100}
-              title="IMDb"
-              onTap={() => goWebsite('imdb', indv_movie.imdb_id)}
+              onTap={() => goWebsite('imdb', indv_movie.homepage)}
+              title="IMDB"
+              width={120}
               txtColor="black"
             />
-          ) : (
-            <></>
-          )}
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -164,69 +153,69 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-  },
-  top_container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  genre_container: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  btn_container: {
-    flexDirection: 'row',
   },
   title_container: {
     flex: 1,
     alignItems: 'center',
   },
-  back_btn: {
-    width: 25,
-    height: 25,
-    marginLeft: 10,
-    marginTop: 10,
+  image: {
+    width: '100%',
+    height: 300,
+    resizeMode: 'cover',
   },
-  fav_btn: {
-    marginTop: 10,
-    marginRight: 5,
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  backButton: {},
+  favoriteButton: {
+    marginTop: 3,
   },
   title: {
     fontSize: 20,
-    color: 'black',
+    fontWeight: 'bold',
+    marginBottom: 5,
     alignSelf: 'center',
-    marginTop: 10,
+    color: 'black',
     textAlign: 'center',
-  },
-  movie_img: {
-    width: Dimensions.get('window').width - 20,
-    height: Dimensions.get('window').height / 3,
-    borderRadius: 10,
-    resizeMode: 'contain',
-    marginTop: 10,
   },
   overview: {
     fontSize: 16,
+    marginBottom: 10,
     color: 'black',
-    marginTop: 10,
-    marginLeft: 5,
-    marginRight: 5,
     textAlign: 'justify',
   },
-  genre: {
+  infoContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  infoLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginRight: 5,
+    color: 'black',
+  },
+  infoValue: {
     fontSize: 16,
     color: 'black',
-    marginLeft: 5,
-    marginRight: 5,
-    textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
   tagline: {
-    fontSize: 16,
+    fontSize: 15,
     color: 'black',
     textAlign: 'center',
-    marginTop: 5,
+    marginBottom: 5,
   },
 });
 
