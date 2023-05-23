@@ -70,20 +70,25 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      <FlatList
-        keyExtractor={item => item.id.toString()}
-        data={movies}
-        initialNumToRender={5}
-        renderItem={({item}) => (
-          <MovieCardNew
-            image={item.poster_path}
-            title={item.original_title}
-            vote={item.vote_average}
-            date={item.release_date}
-            onPress={() => goDetail(item.id)}
-          />
-        )}
-      />
+      {movies !== null ? (
+        <FlatList
+          keyExtractor={item => item.id.toString()}
+          data={movies}
+          initialNumToRender={5}
+          renderItem={({item}) => (
+            <MovieCardNew
+              image={item.poster_path}
+              title={item.original_title}
+              vote={item.vote_average}
+              date={item.release_date}
+              onPress={() => goDetail(item.id)}
+            />
+          )}
+        />
+      ) : (
+        <></>
+      )}
+
       {showButton && (
         <View style={styles.btn_container}>
           <ButtonWithIcon

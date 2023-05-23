@@ -5,7 +5,8 @@ import {connect} from 'react-redux';
 import FavoriteCard from '../components/FavoriteCard';
 import {showToast} from '../utils/showToast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BACKGROUND_COLOR } from '../utils/Config';
+import {BACKGROUND_COLOR} from '../utils/Config';
+import LottieView from 'lottie-react-native';
 
 interface FavoriteScreenProps {
   movieReducer: MovieState;
@@ -64,18 +65,33 @@ const _FavoriteScreen: React.FC<FavoriteScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={favoriteMovies}
-        initialNumToRender={5}
-        renderItem={({item}) => (
-          <FavoriteCard
-            image={item.poster_path}
-            title={item.original_title}
-            unFavMovie={() => unFav(item.id, item.title)}
-            onPress={() => goDetail(item.id)}
-          />
-        )}
-      />
+      {favoriteMovies.length >= 1 ? (
+        <FlatList
+          data={favoriteMovies}
+          initialNumToRender={5}
+          renderItem={({item}) => (
+            <FavoriteCard
+              image={item.poster_path}
+              title={item.original_title}
+              unFavMovie={() => unFav(item.id, item.title)}
+              onPress={() => goDetail(item.id)}
+            />
+          )}
+        />
+      ) : (
+        <>
+          <View style={styles.animation_container}>
+            <LottieView
+              source={require('../assets/animations/ghost.json')}
+              autoPlay
+              style={{height: 150, width: 150}}
+              loop={true}
+              resizeMode="cover"
+            />
+            <Text style={styles.text}>No Fav yet</Text>
+          </View>
+        </>
+      )}
     </View>
   );
 };
@@ -84,16 +100,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: BACKGROUND_COLOR,
-  },
-  top_container: {
-    flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
+  },
+  animation_container: {
+    flexDirection: 'column',
+    alignSelf: 'center',
   },
   text: {
-    fontSize: 30,
+    fontSize: 25,
     color: 'black',
+    textAlign: 'center',
   },
 });
 
