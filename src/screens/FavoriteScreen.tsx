@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: 'black',
     textAlign: 'center',
+    fontFamily: 'Montserrat-Black',
   },
 });
 

@@ -10,7 +10,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({setIsLoading}) => {
   return (
     <View style={styles.container}>
       <LottieView
-        source={require('../assets/animations/movie.json')}
+        source={require('../assets/animations/movie4.json')}
         autoPlay
         style={{height: 300, width: 300}}
         loop={false}

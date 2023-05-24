@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   button_text: {
     fontSize: 17,
     color: MAIN_COLOR,
-    fontWeight: '800',
+    fontFamily: 'Montserrat-SemiBold',
   },
   icon: {
     marginLeft: 10,

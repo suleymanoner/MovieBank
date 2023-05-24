@@ -100,11 +100,12 @@ const styles = StyleSheet.create({
     height: 50,
     fontSize: 16,
     color: 'black',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Montserrat-Regular',
   },
   text: {
     fontSize: 30,
     color: 'black',
+    fontFamily: 'Montserrat-Regular',
   },
   clearIcon: {
     position: 'absolute',

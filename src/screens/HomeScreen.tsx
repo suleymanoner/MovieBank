@@ -39,8 +39,9 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
           keyExtractor={item => item.id.toString()}
           data={movies}
           initialNumToRender={5}
-          renderItem={({item}) => (
+          renderItem={({item, index}) => (
             <MovieCardNew
+              key={index}
               image={item.poster_path}
               title={item.original_title}
               vote={item.vote_average}

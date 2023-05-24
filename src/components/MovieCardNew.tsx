@@ -36,7 +36,7 @@ const MovieCardNew: React.FC<MovieCardNewProps> = ({
               }>
               {vote.toFixed(1)}
             </Text>
-            <Text style={styles.voteLabel}>/10</Text>
+            <Text style={styles.voteLabel}> / 10</Text>
           </View>
         </View>
       </View>
@@ -65,29 +65,32 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: 'bold',
     marginBottom: 5,
     color: 'black',
+    fontFamily: 'Montserrat-Bold',
   },
   infoContainer: {
     flexDirection: 'column',
-    marginTop: 5,
+    marginTop: 10,
   },
   date: {
     fontSize: 14,
-    color: 'gray',
+    color: 'black',
+    fontFamily: 'Montserrat-Regular',
   },
   voteContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 3,
   },
   voteText: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: 'Montserrat-SemiBold',
   },
   voteLabel: {
     fontSize: 14,
-    color: 'gray',
+    color: 'black',
+    fontFamily: 'Montserrat-Regular',
   },
 });
 

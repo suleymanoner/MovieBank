@@ -179,17 +179,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
     marginBottom: 5,
     alignSelf: 'center',
     color: 'black',
     textAlign: 'center',
+    fontFamily: 'Montserrat-Bold',
   },
   overview: {
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 5,
     color: 'black',
     textAlign: 'justify',
+    fontFamily: 'Montserrat-Regular',
   },
   infoContainer: {
     flexDirection: 'column',
@@ -201,21 +202,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginRight: 5,
     color: 'black',
+    fontFamily: 'Montserrat-SemiBold',
   },
   infoValue: {
     fontSize: 16,
     color: 'black',
+    fontFamily: 'Montserrat-Regular',
+    textAlign: 'center',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: 10,
   },
   tagline: {
     fontSize: 15,
     color: 'black',
     textAlign: 'center',
     marginBottom: 5,
+    fontFamily: 'Montserrat-SemiBold',
   },
 });
 
