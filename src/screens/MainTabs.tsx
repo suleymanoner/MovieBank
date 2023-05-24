@@ -7,7 +7,6 @@ import {FavoriteScreen} from './FavoriteScreen';
 import {ProfileScreen} from './ProfileScreen';
 import {DetailScreen} from './DetailScreen';
 import {SearchScreen} from './SearchScreen';
-import {BACKGROUND_COLOR} from '../utils/Config';
 
 const HomeStack = createNativeStackNavigator();
 const FavoriteStack = createNativeStackNavigator();

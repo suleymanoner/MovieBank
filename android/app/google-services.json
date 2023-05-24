@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "277791058366",
+    "project_id": "moviebank-857e5",
+    "storage_bucket": "moviebank-857e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277791058366:android:93799121d5fc2386dbb1ef",
+        "android_client_info": {
+          "package_name": "com.moviebank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "277791058366-2lh5hnc4ftujlelol90bi2dnehsefeb4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuDqBbMwOA11auAQwxH8V5PK6hqL9TuoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "277791058366-2lh5hnc4ftujlelol90bi2dnehsefeb4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
