@@ -1,6 +1,7 @@
 import React, {Dispatch, SetStateAction} from 'react';
 import {StyleSheet, View} from 'react-native';
 import LottieView from 'lottie-react-native';
+import {BACKGROUND_COLOR} from '../utils/Config';
 
 interface SplashScreenProps {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
@@ -27,6 +28,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 0,
+    backgroundColor: BACKGROUND_COLOR,
   },
 });
 
