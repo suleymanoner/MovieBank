@@ -36,7 +36,9 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
     <View style={styles.container}>
       {movies !== null ? (
         <FlatList
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={(item, index) =>
+            item.id.toString() + '_' + index.toString()
+          }
           data={movies}
           initialNumToRender={5}
           renderItem={({item, index}) => (

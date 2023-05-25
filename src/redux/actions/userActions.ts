@@ -1,6 +1,7 @@
 import auth from '@react-native-firebase/auth';
 import {showToast} from '../../utils/showToast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import firestore from '@react-native-firebase/firestore';
 
 export const onUserLogin = async (email: string, password: string) => {
   try {
@@ -22,6 +23,17 @@ export const onUserSignUp = async (
   try {
     await AsyncStorage.setItem('user_name', name);
     await AsyncStorage.setItem('user_surname', surname);
+
+    firestore()
+      .collection('users')
+      .add({
+        name: name,
+        surname: surname,
+        email: email,
+      })
+      .then(() => {
+        console.log('User added!');
+      });
 
     await auth().createUserWithEmailAndPassword(email, password);
     showToast('Successfully signed up!');
