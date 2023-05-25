@@ -15,11 +15,20 @@ import {showToast} from '../utils/showToast';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from 'react-navigation-stack/lib/typescript/src/vendor/types';
 import {RootStackParams} from '../../App';
+import auth from '@react-native-firebase/auth';
 
 interface LoginScreenProps {}
 
 const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
+
+  const user = auth().currentUser;
+
+  useEffect(() => {
+    if (user?.email) {
+      navigation.navigate('BottomTabStack');
+    }
+  }, [user]);
 
   const [isSignUp, setIsSignUp] = useState(false);
 
@@ -157,8 +166,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
         {isSignUp ? (
           <></>
         ) : (
-          <TouchableOpacity onPress={() => {}}>
-            <Text style={styles.other_text}>Forgot password?</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ForgotPasswordPage')}>
+            <Text style={styles.other_text}>Reset password?</Text>
           </TouchableOpacity>
         )}
 
