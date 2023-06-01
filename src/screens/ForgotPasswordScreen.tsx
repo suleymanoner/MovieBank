@@ -3,7 +3,7 @@ import {Alert, StyleSheet, Text, View} from 'react-native';
 import {TextField} from '../components/TextField';
 import {showToast} from '../utils/showToast';
 import auth from '@react-native-firebase/auth';
-import {BACKGROUND_COLOR, BTN_COLOR} from '../utils/Config';
+import {BACKGROUND_COLOR, BTN_COLOR, handleError} from '../utils/Config';
 import {ButtonWithIcon} from '../components/ButtonWithIcon';
 
 interface ForgotPasswordScreenProps {
@@ -36,7 +36,8 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
                   navigation.navigate('LoginPage');
                 })
                 .catch(err => {
-                  showToast(err);
+                  const msg = handleError(err.message);
+                  showToast(msg!);
                 });
             },
           },

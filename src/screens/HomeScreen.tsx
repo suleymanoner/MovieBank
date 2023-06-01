@@ -1,28 +1,30 @@
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, FlatList} from 'react-native';
 import {connect} from 'react-redux';
-import {
-  ApplicationState,
-  MovieState,
-  onGetMovies,
-  onGetIndvMovie,
-} from '../redux';
+import {ApplicationState, MovieState, onGetMovies, onGetGenres} from '../redux';
 import {BACKGROUND_COLOR} from '../utils/Config';
 import MovieCardNew from '../components/MovieCardNew';
+import MovCard from '../components/MovCard';
 
 interface HomeScreenProps {
   movieReducer: MovieState;
   fetchMovies: Function;
   fetchIndvMovie: Function;
+  fetchGenres: Function;
 }
 
 const _HomeScreen: React.FC<HomeScreenProps> = ({
   navigation,
   movieReducer,
   fetchMovies,
+  fetchGenres,
 }) => {
-  const {movies} = movieReducer;
+  const {movies, genres} = movieReducer;
   const [page, setPage] = useState<number>(1);
+
+  useEffect(() => {
+    fetchGenres();
+  });
 
   useEffect(() => {
     fetchMovies(page);
@@ -40,11 +42,14 @@ const _HomeScreen: React.FC<HomeScreenProps> = ({
             item.id.toString() + '_' + index.toString()
           }
           data={movies}
+          horizontal
           initialNumToRender={5}
           renderItem={({item, index}) => (
-            <MovieCardNew
+            <MovCard
               key={index}
               image={item.poster_path}
+              genre_ids={item.genre_ids}
+              genres={genres}
               title={item.original_title}
               vote={item.vote_average}
               date={item.release_date}
@@ -91,6 +96,7 @@ const mapToStateProps = (state: ApplicationState) => ({
 
 const HomeScreen = connect(mapToStateProps, {
   fetchMovies: onGetMovies,
+  fetchGenres: onGetGenres,
 })(_HomeScreen);
 
 export {HomeScreen};

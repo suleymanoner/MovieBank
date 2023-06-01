@@ -45,6 +45,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
       const success = await onUserLogin(email, password);
       if (success) {
         navigation.navigate('BottomTabStack');
+        setEmail('');
+        setPassword('');
       } else {
         console.log('Login failed!');
       }
@@ -65,6 +67,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
       const success = await onUserSignUp(name, surname, email, password);
       if (success) {
         navigation.navigate('BottomTabStack');
+        setName('');
+        setSurname('');
+        setEmail('');
+        setPassword('');
+        setPasswordAgain('');
       } else {
         console.log('Signup failed');
       }
@@ -89,7 +96,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
           <Text style={styles.title}>SIGN-UP</Text>
         ) : (
           <>
-            <Image source={{uri: logo}} style={styles.logo_image} />
+            <Image
+              source={require('../assets/images/moviebank_logo.png')}
+              style={styles.logo_image}
+            />
             <Text style={styles.title}>LOGIN</Text>
           </>
         )}
@@ -220,8 +230,8 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   logo_image: {
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 200,
     margin: 10,
   },
 });

@@ -2,6 +2,7 @@ import auth from '@react-native-firebase/auth';
 import {showToast} from '../../utils/showToast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
+import {handleError} from '../../utils/Config';
 
 export const onUserLogin = async (email: string, password: string) => {
   try {
@@ -9,7 +10,8 @@ export const onUserLogin = async (email: string, password: string) => {
     showToast('Successfully logged in!');
     return true;
   } catch (error) {
-    showToast(error.message);
+    const msg = handleError(error.message);
+    showToast(msg!);
     return false;
   }
 };
@@ -39,7 +41,8 @@ export const onUserSignUp = async (
     showToast('Successfully signed up!');
     return true;
   } catch (error) {
-    showToast(error.message);
+    const msg = handleError(error.message);
+    showToast(msg!);
     return false;
   }
 };
@@ -56,6 +59,7 @@ export const onUserLogout = async () => {
         console.log('Err: ' + err.message);
       });
   } catch (error) {
-    console.log('Error: ' + error);
+    const msg = handleError(error.message);
+    showToast(msg!);
   }
 };

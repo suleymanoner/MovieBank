@@ -34,7 +34,7 @@ const _SearchScreen: React.FC<FavoriteScreenProps> = ({
 
   useEffect(() => {
     searchMovie(txt);
-  }, [txt]);
+  }, [searchMovie, txt]);
 
   return (
     <View style={styles.container}>

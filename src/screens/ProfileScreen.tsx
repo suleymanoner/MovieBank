@@ -1,5 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {BACKGROUND_COLOR, BTN_COLOR} from '../utils/Config';
 import {ButtonWithIcon} from '../components/ButtonWithIcon';
@@ -8,6 +15,7 @@ import {onUserLogout} from '../redux/actions/userActions';
 import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
+import {showToast} from '../utils/showToast';
 
 interface ProfileScreenProps {
   navigation: any;
@@ -53,8 +61,20 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   };
 
   const logout = async () => {
-    await onUserLogout();
-    navigation.navigate('LoginStack');
+    Alert.alert('Logout', 'Are you sure to logout?', [
+      {
+        text: 'Cancel',
+        onPress: () => showToast('Logout cancelled!'),
+        style: 'cancel',
+      },
+      {
+        text: 'OK',
+        onPress: async () => {
+          await onUserLogout();
+          navigation.navigate('LoginStack');
+        },
+      },
+    ]);
   };
 
   const chooseFromLibrary = () => {

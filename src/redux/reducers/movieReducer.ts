@@ -1,11 +1,12 @@
 import {MovieAction} from '../actions';
-import {MovieState, Movie, IndvMovie} from '../models';
+import {MovieState, Movie, IndvMovie, Genre} from '../models';
 
 const initialState: MovieState = {
   movies: [] as Movie[],
   indv_movie: {} as IndvMovie,
   search_results: [] as Movie[],
   fav_movies: [] as Movie[],
+  genres: [] as Genre[],
 };
 
 const MovieReducer = (
@@ -29,6 +30,12 @@ const MovieReducer = (
       return {
         ...state,
         search_results: action.payload.results,
+      };
+
+    case 'GET_GENRES':
+      return {
+        ...state,
+        genres: action.payload.genres,
       };
 
     case 'FAV_MOVIE':
