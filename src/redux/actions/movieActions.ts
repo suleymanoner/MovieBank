@@ -1,7 +1,13 @@
 import axios from 'axios';
 import {Dispatch} from 'react';
-import {API_KEY, BASE_URL, POPULAR_URL, SEARCH_URL} from '../../utils/Config';
-import {IndvMovie, Movie, Response} from '../models';
+import {
+  API_KEY,
+  BASE_URL,
+  GENRE_URL,
+  POPULAR_URL,
+  SEARCH_URL,
+} from '../../utils/Config';
+import {IndvMovie, Movie, Response, GenreResponse} from '../models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {showToast} from '../../utils/showToast';
 
@@ -20,6 +26,11 @@ export interface GetSearchResults {
   payload: Response;
 }
 
+export interface GetGenres {
+  readonly type: 'GET_GENRES';
+  payload: GenreResponse;
+}
+
 export interface FavMovie {
   readonly type: 'FAV_MOVIE';
   payload: Movie;
@@ -30,12 +41,18 @@ export interface UnFavMovie {
   payload: number;
 }
 
+export interface DeleteAllFavs {
+  readonly type: 'DELETE_ALL_FAVS';
+}
+
 export type MovieAction =
   | GetMovies
   | GetIndvMovie
   | GetSearchResults
+  | GetGenres
   | FavMovie
-  | UnFavMovie;
+  | UnFavMovie
+  | DeleteAllFavs;
 
 export const onGetMovies = (page: number) => {
   return async (dispatch: Dispatch<MovieAction>) => {
@@ -91,6 +108,24 @@ export const onSearchMovie = (query: string) => {
   };
 };
 
+export const onGetGenres = () => {
+  return async (dispatch: Dispatch<MovieAction>) => {
+    try {
+      await axios
+        .get<GenreResponse>(GENRE_URL)
+        .then(response => {
+          dispatch({
+            type: 'GET_GENRES',
+            payload: response.data,
+          });
+        })
+        .catch(err => console.log(err));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
 export const onFavMovie = (movie: Movie) => {
   return async (dispatch: Dispatch<MovieAction>) => {
     try {
@@ -132,6 +167,24 @@ export const onUnFavMovie = (id: number) => {
       dispatch({
         type: 'UN_FAV_MOVIE',
         payload: id,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const onDeleteAllFavs = () => {
+  return async (dispatch: Dispatch<MovieAction>) => {
+    try {
+      const existingFavMovies = await AsyncStorage.getItem('fav_movies');
+
+      if (existingFavMovies !== null) {
+        await AsyncStorage.setItem('fav_movies', JSON.stringify([]));
+      }
+
+      dispatch({
+        type: 'DELETE_ALL_FAVS',
       });
     } catch (error) {
       console.log(error);

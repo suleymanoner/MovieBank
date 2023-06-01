@@ -27,6 +27,7 @@ export interface MovieState {
   indv_movie: IndvMovie;
   search_results: Movie[];
   fav_movies: Movie[];
+  genres: Genre[];
 }
 
 export interface Genre {
@@ -83,4 +84,8 @@ export interface IndvMovie {
   video: boolean;
   vote_average: number;
   vote_count: number;
+}
+
+export interface GenreResponse {
+  genres: Genre[];
 }
