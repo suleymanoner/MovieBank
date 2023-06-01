@@ -1,22 +1,31 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, FlatList, Alert} from 'react-native';
-import {ApplicationState, MovieState, onUnFavMovie, Movie} from '../redux';
+import {
+  ApplicationState,
+  MovieState,
+  onUnFavMovie,
+  Movie,
+  onDeleteAllFavs,
+} from '../redux';
 import {connect} from 'react-redux';
 import FavoriteCard from '../components/FavoriteCard';
 import {showToast} from '../utils/showToast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BACKGROUND_COLOR} from '../utils/Config';
 import LottieView from 'lottie-react-native';
+import {FAB} from 'react-native-paper';
 
 interface FavoriteScreenProps {
   movieReducer: MovieState;
   unFavMov: Function;
+  deleteAllFavMovies: Function;
 }
 
 const _FavoriteScreen: React.FC<FavoriteScreenProps> = ({
   navigation,
   movieReducer,
   unFavMov,
+  deleteAllFavMovies,
 }) => {
   const [favoriteMovies, setFavoriteMovies] = useState<Movie[]>([]);
 
@@ -59,6 +68,23 @@ const _FavoriteScreen: React.FC<FavoriteScreenProps> = ({
     }
   };
 
+  const deleteAllFavs = () => {
+    Alert.alert('Unfav all movies', 'Are you sure to unfavorite all movies?', [
+      {
+        text: 'Cancel',
+        onPress: () => showToast('Unfav cancelled!'),
+        style: 'cancel',
+      },
+      {
+        text: 'OK',
+        onPress: () => {
+          deleteAllFavMovies();
+          showToast('All movies unfaved!');
+        },
+      },
+    ]);
+  };
+
   useEffect(() => {
     getFavoriteMovies();
   }, [favoriteMovies]);
@@ -66,18 +92,26 @@ const _FavoriteScreen: React.FC<FavoriteScreenProps> = ({
   return (
     <View style={styles.container}>
       {favoriteMovies.length >= 1 ? (
-        <FlatList
-          data={favoriteMovies}
-          initialNumToRender={5}
-          renderItem={({item}) => (
-            <FavoriteCard
-              image={item.poster_path}
-              title={item.original_title}
-              unFavMovie={() => unFav(item.id, item.title)}
-              onPress={() => goDetail(item.id)}
-            />
-          )}
-        />
+        <>
+          <FlatList
+            data={favoriteMovies}
+            initialNumToRender={5}
+            renderItem={({item}) => (
+              <FavoriteCard
+                image={item.poster_path}
+                title={item.original_title}
+                unFavMovie={() => unFav(item.id, item.title)}
+                onPress={() => goDetail(item.id)}
+              />
+            )}
+          />
+          <FAB
+            style={styles.fab}
+            icon="delete"
+            color="black"
+            onPress={() => deleteAllFavs()}
+          />
+        </>
       ) : (
         <>
           <View style={styles.animation_container}>
@@ -112,6 +146,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Montserrat-Black',
   },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#FF8C8C',
+  },
 });
 
 const mapToStateProps = (state: ApplicationState) => ({
@@ -120,6 +161,7 @@ const mapToStateProps = (state: ApplicationState) => ({
 
 const FavoriteScreen = connect(mapToStateProps, {
   unFavMov: onUnFavMovie,
+  deleteAllFavMovies: onDeleteAllFavs,
 })(_FavoriteScreen);
 
 export {FavoriteScreen};
