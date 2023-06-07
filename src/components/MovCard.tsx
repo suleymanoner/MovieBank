@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Pressable,
 } from 'react-native';
-import {BASE_IMG_URL} from '../utils/Config';
+import {BASE_IMG_URL, BTN_COLOR} from '../utils/Config';
 import moment from 'moment';
 import {Genre} from '../redux';
 import {GenreCard} from './GenreCard';
@@ -31,14 +32,14 @@ const MovCard: React.FC<MovCardNewProps> = ({
   date,
   onPress,
 }) => {
-  const editedDate = moment(date).format('l');
+  const editedDate = moment(date).format('LL');
 
   const selectedGenres = genres
     .filter(genre => genre_ids.includes(genre.id))
     .map(genre => genre.name);
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <Pressable style={styles.container} onPress={onPress}>
       <Image source={{uri: BASE_IMG_URL + image}} style={styles.image} />
       <View style={styles.detailsContainer}>
         <Text style={styles.title}>{title}</Text>
@@ -66,13 +67,13 @@ const MovCard: React.FC<MovCardNewProps> = ({
           return <GenreCard name={genre} key={genre} />;
         })}
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: '#FBFFBF',
     borderRadius: 10,
     padding: 10,
     flexDirection: 'column',

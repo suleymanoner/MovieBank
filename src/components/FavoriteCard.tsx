@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Pressable,
 } from 'react-native';
 import {BASE_IMG_URL} from '../utils/Config';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -26,7 +27,7 @@ const FavoriteCard: React.FC<FavoriteCardProps> = ({
   search,
 }) => {
   return (
-    <TouchableOpacity onPress={onPress}>
+    <Pressable onPress={onPress}>
       <View style={styles.container}>
         <Image source={{uri: BASE_IMG_URL + image}} style={styles.image} />
         <View style={styles.content}>
@@ -42,7 +43,7 @@ const FavoriteCard: React.FC<FavoriteCardProps> = ({
           )}
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

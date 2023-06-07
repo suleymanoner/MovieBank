@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, Pressable} from 'react-native';
 import {MAIN_COLOR} from '../utils/Config';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -29,7 +29,7 @@ const ButtonWithIcon: React.FC<ButtonProps> = ({
   disable,
 }) => {
   return (
-    <TouchableOpacity
+    <Pressable
       disabled={disable}
       style={[styles.button, {width, height, backgroundColor: btnColor}]}
       onPress={() => onTap()}>
@@ -42,7 +42,7 @@ const ButtonWithIcon: React.FC<ButtonProps> = ({
           name={iconName!}
         />
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

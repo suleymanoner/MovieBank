@@ -60,22 +60,22 @@ const MainTabScreen = () => (
       }}
     />
     <Tab.Screen
-      name="FavoriteStack"
-      component={FavoriteStackScreen}
-      options={{
-        tabBarLabel: 'Favorites',
-        tabBarIcon: ({color}) => (
-          <Icon name="cards-heart" color={color} size={26} />
-        ),
-      }}
-    />
-    <Tab.Screen
       name="SearchStack"
       component={SearchStackScreen}
       options={{
         tabBarLabel: 'Search',
         tabBarIcon: ({color}) => (
           <Icon name="magnify" color={color} size={26} />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="FavoriteStack"
+      component={FavoriteStackScreen}
+      options={{
+        tabBarLabel: 'Favorites',
+        tabBarIcon: ({color}) => (
+          <Icon name="cards-heart" color={color} size={26} />
         ),
       }}
     />
