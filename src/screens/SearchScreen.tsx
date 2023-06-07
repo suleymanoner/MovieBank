@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TextInput,
   FlatList,
   TouchableOpacity,
 } from 'react-native';
 import {ApplicationState, MovieState, onSearchMovie} from '../redux';
+import {useIsFocused} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import FavoriteCard from '../components/FavoriteCard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -24,13 +24,20 @@ const _SearchScreen: React.FC<FavoriteScreenProps> = ({
   searchMovie,
 }) => {
   const {search_results} = movieReducer;
-
   const [isEditing, setIsEditing] = useState(false);
   const [txt, setTxt] = useState('');
+  const isFocused = useIsFocused();
 
   const goDetail = (id: number) => {
     navigation.navigate('Detail', {mov_id: id});
   };
+
+  useEffect(() => {
+    if (!isFocused) {
+      setTxt('');
+      setIsEditing(false);
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     searchMovie(txt);

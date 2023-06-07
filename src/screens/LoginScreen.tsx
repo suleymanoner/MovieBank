@@ -16,19 +16,30 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from 'react-navigation-stack/lib/typescript/src/vendor/types';
 import {RootStackParams} from '../../App';
 import auth from '@react-native-firebase/auth';
+import {useIsFocused} from '@react-navigation/native';
 
 interface LoginScreenProps {}
 
 const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
-
   const user = auth().currentUser;
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (user?.email) {
       navigation.navigate('BottomTabStack');
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!isFocused) {
+      setName('');
+      setSurname('');
+      setEmail('');
+      setPassword('');
+      setPasswordAgain('');
+    }
+  }, [isFocused]);
 
   const [isSignUp, setIsSignUp] = useState(false);
 
@@ -45,8 +56,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
       const success = await onUserLogin(email, password);
       if (success) {
         navigation.navigate('BottomTabStack');
-        setEmail('');
-        setPassword('');
       } else {
         console.log('Login failed!');
       }
@@ -67,11 +76,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
       const success = await onUserSignUp(name, surname, email, password);
       if (success) {
         navigation.navigate('BottomTabStack');
-        setName('');
-        setSurname('');
-        setEmail('');
-        setPassword('');
-        setPasswordAgain('');
       } else {
         console.log('Signup failed');
       }
@@ -86,9 +90,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
     }
   };
 
-  const logo =
-    'https://static.vecteezy.com/system/resources/previews/001/192/065/original/circle-logo-turbine-png.png';
-
   return (
     <View style={styles.container}>
       <View style={styles.logo_container}>
@@ -97,7 +98,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
         ) : (
           <>
             <Image
-              source={require('../assets/images/moviebank_logo.png')}
+              source={require('../assets/images/moviebank_logo2.png')}
               style={styles.logo_image}
             />
             <Text style={styles.title}>LOGIN</Text>
@@ -178,10 +179,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
         ) : (
           <TouchableOpacity
             onPress={() => navigation.navigate('ForgotPasswordPage')}>
-            <Text style={styles.other_text}>Reset password?</Text>
+            <Text style={styles.other_text}>Forgot password?</Text>
           </TouchableOpacity>
         )}
-
         <TouchableOpacity
           onPress={() => {
             isSignUp ? onTapGoNextScreen('login') : onTapGoNextScreen('signup');
@@ -230,9 +230,10 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   logo_image: {
-    width: 200,
-    height: 200,
-    margin: 10,
+    width: 250,
+    height: 100,
+    margin: 40,
+    resizeMode: 'contain',
   },
 });
 
