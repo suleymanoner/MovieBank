@@ -10,6 +10,8 @@ import {
 import {IndvMovie, Movie, Response, GenreResponse} from '../models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {showToast} from '../../utils/showToast';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 export interface GetMovies {
   readonly type: 'GET_MOVIES';
@@ -19,6 +21,10 @@ export interface GetMovies {
 export interface GetIndvMovie {
   readonly type: 'GET_INDV_MOVIE';
   payload: IndvMovie;
+}
+
+export interface RemoveIndvMovie {
+  readonly type: 'REMOVE_INDV_MOVIE';
 }
 
 export interface GetSearchResults {
@@ -48,6 +54,7 @@ export interface DeleteAllFavs {
 export type MovieAction =
   | GetMovies
   | GetIndvMovie
+  | RemoveIndvMovie
   | GetSearchResults
   | GetGenres
   | FavMovie
@@ -84,6 +91,18 @@ export const onGetIndvMovie = (id: number) => {
           });
         })
         .catch(err => console.log(err));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const onRemoveIndvMovie = () => {
+  return async (dispatch: Dispatch<MovieAction>) => {
+    try {
+      dispatch({
+        type: 'REMOVE_INDV_MOVIE',
+      });
     } catch (error) {
       console.log(error);
     }
@@ -129,6 +148,34 @@ export const onGetGenres = () => {
 export const onFavMovie = (movie: Movie) => {
   return async (dispatch: Dispatch<MovieAction>) => {
     try {
+      const isAlreadyFaved = firestore()
+        .collection('favorites')
+        .doc(auth().currentUser?.email! + movie.id)
+        .get();
+
+      if ((await isAlreadyFaved).exists) {
+        showToast(`${movie.original_title} already faved!`);
+      } else {
+        firestore()
+          .collection('favorites')
+          .doc(auth().currentUser?.email! + movie.id)
+          .set({
+            id: movie.id,
+            title: movie.title,
+            image: movie.poster_path,
+          })
+          .then(() => {
+            console.log('Movie faved!');
+          });
+
+        dispatch({
+          type: 'FAV_MOVIE',
+          payload: movie,
+        });
+        showToast(`${movie.original_title} faved!`);
+      }
+
+      /*
       const existingFavMovies = await AsyncStorage.getItem('fav_movies');
       const favMovies = existingFavMovies ? JSON.parse(existingFavMovies) : [];
 
@@ -139,13 +186,7 @@ export const onFavMovie = (movie: Movie) => {
       } else {
         favMovies.push(movie);
         await AsyncStorage.setItem('fav_movies', JSON.stringify(favMovies));
-
-        dispatch({
-          type: 'FAV_MOVIE',
-          payload: movie,
-        });
-        showToast(`${movie.original_title} faved!`);
-      }
+      }*/
     } catch (error) {
       console.log(error);
     }
@@ -155,6 +196,17 @@ export const onFavMovie = (movie: Movie) => {
 export const onUnFavMovie = (id: number) => {
   return async (dispatch: Dispatch<MovieAction>) => {
     try {
+      firestore()
+        .collection('favorites')
+        .doc(auth().currentUser?.email! + id)
+        .delete();
+
+      dispatch({
+        type: 'UN_FAV_MOVIE',
+        payload: id,
+      });
+
+      /*
       const existingFavMovies = await AsyncStorage.getItem('fav_movies');
       const favMovies = existingFavMovies ? JSON.parse(existingFavMovies) : [];
       const index = favMovies.findIndex((movie: Movie) => movie.id === id);
@@ -162,12 +214,7 @@ export const onUnFavMovie = (id: number) => {
       if (index !== -1) {
         favMovies.splice(index, 1);
         await AsyncStorage.setItem('fav_movies', JSON.stringify(favMovies));
-      }
-
-      dispatch({
-        type: 'UN_FAV_MOVIE',
-        payload: id,
-      });
+      }*/
     } catch (error) {
       console.log(error);
     }
@@ -177,15 +224,29 @@ export const onUnFavMovie = (id: number) => {
 export const onDeleteAllFavs = () => {
   return async (dispatch: Dispatch<MovieAction>) => {
     try {
-      const existingFavMovies = await AsyncStorage.getItem('fav_movies');
+      const snapshot = firestore()
+        .collection('favorites')
+        .where(firestore.FieldPath.documentId(), '>', auth().currentUser?.email)
+        .get();
 
-      if (existingFavMovies !== null) {
-        await AsyncStorage.setItem('fav_movies', JSON.stringify([]));
-      }
+      const batch = firestore().batch();
+
+      (await snapshot).forEach(doc => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
 
       dispatch({
         type: 'DELETE_ALL_FAVS',
       });
+
+      /*
+      const existingFavMovies = await AsyncStorage.getItem('fav_movies');
+
+      if (existingFavMovies !== null) {
+        await AsyncStorage.setItem('fav_movies', JSON.stringify([]));
+      }*/
     } catch (error) {
       console.log(error);
     }

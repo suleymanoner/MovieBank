@@ -26,6 +26,12 @@ const MovieReducer = (
         indv_movie: action.payload,
       };
 
+    case 'REMOVE_INDV_MOVIE':
+      return {
+        ...state,
+        indv_movie: {},
+      };
+
     case 'GET_SEARCH_RESULTS':
       return {
         ...state,
@@ -51,6 +57,12 @@ const MovieReducer = (
           movie => movie.id !== action.payload,
         ),
       };
+
+    /*
+    case 'DELETE_ALL_FAVS':
+      return {
+        fav_movies: [],
+      };*/
 
     default:
       return state;
