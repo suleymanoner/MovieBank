@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   Linking,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {
@@ -14,16 +15,17 @@ import {
   MovieState,
   onGetIndvMovie,
   onFavMovie,
+  onRemoveIndvMovie,
 } from '../redux';
 import {BACKGROUND_COLOR, BASE_IMG_URL, BTN_COLOR} from '../utils/Config';
 import {ButtonWithIcon} from '../components/ButtonWithIcon';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
 interface DetailScreenProps {
   route: any;
   movieReducer: MovieState;
   fetchIndvMovie: Function;
   favMovie: Function;
+  removeIndvMov: Function;
 }
 
 const _DetailScreen: React.FC<DetailScreenProps> = ({
@@ -32,6 +34,7 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
   movieReducer,
   fetchIndvMovie,
   favMovie,
+  removeIndvMov,
 }) => {
   const {mov_id} = route.params;
   const {indv_movie} = movieReducer;
@@ -73,6 +76,7 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
 
   const goBack = () => {
     navigation.goBack();
+    removeIndvMov();
   };
 
   useEffect(() => {
@@ -83,13 +87,13 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
     await favMovie(indv_movie);
   };
 
-  return (
-    <ScrollView style={{backgroundColor: BACKGROUND_COLOR}}>
-      <View style={styles.container}>
-        <Image
-          source={{uri: BASE_IMG_URL + indv_movie.backdrop_path}}
-          style={styles.image}
-        />
+  return indv_movie.poster_path ? (
+    <View style={styles.container}>
+      <Image
+        source={{uri: BASE_IMG_URL + indv_movie.backdrop_path}}
+        style={styles.image}
+      />
+      <ScrollView style={{backgroundColor: BACKGROUND_COLOR}}>
         <View style={styles.content}>
           <View style={styles.header}>
             <TouchableOpacity onPress={goBack}>
@@ -145,8 +149,12 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
             )}
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
+  ) : (
+    <View style={styles.indicator}>
+      <ActivityIndicator size={'large'} color={BTN_COLOR} />
+    </View>
   );
 };
 
@@ -222,6 +230,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontFamily: 'Montserrat-SemiBold',
   },
+  indicator: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: BACKGROUND_COLOR,
+  },
 });
 
 const mapToStateProps = (state: ApplicationState) => ({
@@ -231,6 +244,7 @@ const mapToStateProps = (state: ApplicationState) => ({
 const DetailScreen = connect(mapToStateProps, {
   fetchIndvMovie: onGetIndvMovie,
   favMovie: onFavMovie,
+  removeIndvMov: onRemoveIndvMovie,
 })(_DetailScreen);
 
 export {DetailScreen};
