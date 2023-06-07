@@ -6,9 +6,10 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {BACKGROUND_COLOR, BTN_COLOR} from '../utils/Config';
+import {BACKGROUND_COLOR, BTN_COLOR, handleError} from '../utils/Config';
 import {ButtonWithIcon} from '../components/ButtonWithIcon';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {onUserLogout} from '../redux/actions/userActions';
@@ -16,31 +17,47 @@ import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
 import {showToast} from '../utils/showToast';
+import {utils} from '@react-native-firebase/app';
+import storage from '@react-native-firebase/storage';
+import {TextField} from '../components/TextField';
+import moment from 'moment';
 
 interface ProfileScreenProps {
   navigation: any;
 }
 
-const profile =
-  'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
+const default_user = require('../assets/images/default_user.png');
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   const [name, setName] = useState<string | null>('');
   const [surname, setSurname] = useState<string | null>('');
-  const [photo, setPhoto] = useState<string | null>(profile);
+  const [photo, setPhoto] = useState<string | null>(default_user);
+  const [isDefaultPhoto, setIsDefaultPhoto] = useState<boolean>(true);
+  const [isChangePass, setIsChangePass] = useState<boolean>(false);
+  const [oldPassword, setOldPassword] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [newPassAgain, setNewPassAgain] = useState<string>('');
+  const reference = storage().ref(auth().currentUser?.email!);
 
-  // we can store this photo url, name, and surname in the firebase db.
   const getPhoto = async () => {
-    const profile_pic = await AsyncStorage.getItem('profile_pic');
-    if (profile_pic) {
-      setPhoto(profile_pic);
+    try {
+      const url = await storage()
+        .ref(auth().currentUser?.email!)
+        .getDownloadURL();
+
+      if (url) {
+        setPhoto(url);
+        setIsDefaultPhoto(false);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   useEffect(() => {
     getPhoto();
     getuser(auth().currentUser?.email!);
-  }, []);
+  }, [photo]);
 
   const getuser = async (email: string) => {
     firestore()
@@ -84,10 +101,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
         height: 400,
         cropping: true,
       })
-        .then(image => {
-          console.log(image);
-          setPhoto(image.path);
-          AsyncStorage.setItem('profile_pic', image.path);
+        .then(async image => {
+          await reference.putFile(image.path);
+          getPhoto();
+          showToast('Profile picture changed!');
         })
         .catch(error => {
           console.log(error);
@@ -97,51 +114,141 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
     }
   };
 
+  const onTapChangePassword = () => {
+    if (
+      oldPassword.length === 0 ||
+      newPassword.length === 0 ||
+      newPassAgain.length === 0
+    ) {
+      showToast('Please fill all blanks!');
+    } else {
+      const emailCred = auth.EmailAuthProvider.credential(
+        auth().currentUser?.email!,
+        oldPassword,
+      );
+
+      if (newPassword !== newPassAgain) {
+        showToast('Passwords are not matched!');
+      } else {
+        auth()
+          .currentUser?.reauthenticateWithCredential(emailCred)
+          .then(async () => {
+            await auth().currentUser?.updatePassword(newPassword);
+            showToast('Password successfully changed!');
+            setIsChangePass(!isChangePass);
+            setOldPassword('');
+            setNewPassword('');
+            setNewPassAgain('');
+          })
+          .catch(err => {
+            const msg = handleError(err.message);
+            showToast(msg!);
+            setOldPassword('');
+            setNewPassword('');
+            setNewPassAgain('');
+          });
+      }
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
         <TouchableOpacity onPress={chooseFromLibrary}>
-          <Image source={{uri: photo}} style={styles.profileImage} />
+          <Image
+            source={isDefaultPhoto ? photo : {uri: photo}}
+            style={styles.profileImage}
+          />
         </TouchableOpacity>
       </View>
-      <View style={styles.infoContainer}>
-        <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>Name:</Text>
-          <Text style={styles.infoText}>{name}</Text>
+      {isChangePass ? (
+        <View style={{flexDirection: 'column'}}>
+          <ScrollView>
+            <TouchableOpacity
+              onPress={() => setIsChangePass(!isChangePass)}
+              style={{marginTop: 5}}>
+              <Icon name="keyboard-backspace" color="black" size={30} />
+            </TouchableOpacity>
+            <Text style={styles.change_pass}>Change Password</Text>
+            <TextField
+              onTextChange={setOldPassword}
+              placeholder="old password"
+              value={oldPassword}
+              isSecure={true}
+            />
+            <TextField
+              onTextChange={setNewPassword}
+              placeholder="new password"
+              value={newPassword}
+              isSecure={true}
+            />
+            <TextField
+              onTextChange={setNewPassAgain}
+              placeholder="new password again"
+              value={newPassAgain}
+              isSecure={true}
+            />
+            <ButtonWithIcon
+              btnColor={BTN_COLOR}
+              height={50}
+              onTap={() => onTapChangePassword()}
+              title="Change Password"
+              width={310}
+              txtColor="black"
+              iconName="key"
+              iconSize={25}
+              iconColor="black"
+            />
+          </ScrollView>
         </View>
-        <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>Surname:</Text>
-          <Text style={styles.infoText}>{surname}</Text>
-        </View>
-        <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>Email:</Text>
-          <Text style={styles.infoText}>{auth().currentUser?.email}</Text>
-        </View>
-      </View>
-      <View style={styles.buttonContainer}>
-        <ButtonWithIcon
-          btnColor={BTN_COLOR}
-          height={40}
-          onTap={() => {}}
-          title="Change Password"
-          width={220}
-          txtColor="black"
-          iconName="key"
-          iconSize={25}
-          iconColor="black"
-        />
-        <ButtonWithIcon
-          btnColor={BTN_COLOR}
-          height={40}
-          onTap={logout}
-          title="Logout"
-          width={220}
-          txtColor="black"
-          iconName="logout"
-          iconSize={25}
-          iconColor="black"
-        />
-      </View>
+      ) : (
+        <>
+          <View style={styles.infoContainer}>
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>Name:</Text>
+              <Text style={styles.infoText}>{name}</Text>
+            </View>
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>Surname:</Text>
+              <Text style={styles.infoText}>{surname}</Text>
+            </View>
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>Email:</Text>
+              <Text style={styles.infoText}>{auth().currentUser?.email}</Text>
+            </View>
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>Joined:</Text>
+              <Text style={styles.infoText}>
+                {moment(auth().currentUser?.metadata.creationTime).format('LL')}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.buttonContainer}>
+            <ButtonWithIcon
+              btnColor={BTN_COLOR}
+              height={50}
+              onTap={() => setIsChangePass(!isChangePass)}
+              title="Change Password"
+              width={310}
+              txtColor="black"
+              iconName="lock"
+              iconSize={25}
+              iconColor="black"
+            />
+            <ButtonWithIcon
+              btnColor={BTN_COLOR}
+              height={50}
+              onTap={logout}
+              title="Logout"
+              width={310}
+              txtColor="black"
+              iconName="logout"
+              iconSize={25}
+              iconColor="black"
+            />
+          </View>
+        </>
+      )}
     </View>
   );
 };
@@ -157,14 +264,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   profileImage: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     borderWidth: 1,
     borderColor: 'black',
   },
   infoContainer: {
-    marginTop: 30,
+    marginTop: 50,
   },
   infoItem: {
     flexDirection: 'row',
@@ -185,6 +292,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     marginBottom: 20,
+  },
+  change_pass: {
+    fontSize: 25,
+    fontFamily: 'Montserrat-SemiBold',
+    color: 'black',
+    marginTop: 10,
+    alignSelf: 'center',
+    marginBottom: 30,
   },
 });
 
