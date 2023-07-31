@@ -1,19 +1,21 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
   TextInput,
   FlatList,
   TouchableOpacity,
+  Text,
 } from 'react-native';
 import {ApplicationState, MovieState, onSearchMovie} from '../redux';
-import {useIsFocused} from '@react-navigation/native';
 import {connect} from 'react-redux';
 import FavoriteCard from '../components/FavoriteCard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {BACKGROUND_COLOR} from '../utils/Config';
+import {showIndicator} from '../utils/showIndicator';
 
 interface FavoriteScreenProps {
+  navigation: any;
   movieReducer: MovieState;
   searchMovie: Function;
 }
@@ -24,24 +26,27 @@ const _SearchScreen: React.FC<FavoriteScreenProps> = ({
   searchMovie,
 }) => {
   const {search_results} = movieReducer;
-  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [txt, setTxt] = useState('');
-  const isFocused = useIsFocused();
 
   const goDetail = (id: number) => {
     navigation.navigate('Detail', {mov_id: id});
   };
 
-  useEffect(() => {
-    if (!isFocused) {
-      setTxt('');
-      setIsEditing(false);
+  const searchMov = useCallback(async (search_text: string) => {
+    try {
+      setIsLoading(true);
+      await searchMovie(search_text);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [isFocused]);
+  }, []);
 
   useEffect(() => {
-    searchMovie(txt);
-  }, [searchMovie, txt]);
+    searchMov(txt);
+  }, [searchMov, txt]);
 
   return (
     <View style={styles.container}>
@@ -49,7 +54,6 @@ const _SearchScreen: React.FC<FavoriteScreenProps> = ({
         <TextInput
           placeholder="Search movie.."
           autoCapitalize="none"
-          onTouchStart={() => setIsEditing(true)}
           onChangeText={text => setTxt(text)}
           value={txt}
           style={styles.textField}
@@ -58,21 +62,29 @@ const _SearchScreen: React.FC<FavoriteScreenProps> = ({
           <Icon name="close-thick" size={20} color="black" />
         </TouchableOpacity>
       </View>
-      {isEditing ? (
-        <FlatList
-          data={search_results}
-          initialNumToRender={5}
-          renderItem={({item}) => (
-            <FavoriteCard
-              image={item.poster_path}
-              title={item.original_title}
-              search={true}
-              onPress={() => goDetail(item.id)}
-            />
-          )}
-        />
+      {isLoading ? (
+        showIndicator()
       ) : (
-        <></>
+        <>
+          {search_results.length > 0 ? (
+            <FlatList
+              data={search_results}
+              initialNumToRender={5}
+              renderItem={({item}) => (
+                <FavoriteCard
+                  image={item.poster_path}
+                  title={item.original_title}
+                  search={true}
+                  onPress={() => goDetail(item.id)}
+                />
+              )}
+            />
+          ) : (
+            <View style={styles.animation_container}>
+              <Text style={styles.empty_text}>No Result yet</Text>
+            </View>
+          )}
+        </>
       )}
     </View>
   );
@@ -119,6 +131,24 @@ const styles = StyleSheet.create({
     right: 10,
     top: 15,
     zIndex: 1,
+  },
+  indicator: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: BACKGROUND_COLOR,
+  },
+  animation_container: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: 30,
+  },
+  empty_text: {
+    fontSize: 25,
+    color: 'black',
+    textAlign: 'center',
+    fontFamily: 'Montserrat-Black',
   },
 });
 
