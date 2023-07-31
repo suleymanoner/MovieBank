@@ -7,6 +7,7 @@ import {FavoriteScreen} from './FavoriteScreen';
 import {ProfileScreen} from './ProfileScreen';
 import {DetailScreen} from './DetailScreen';
 import {SearchScreen} from './SearchScreen';
+import {MovieListScreen} from './MovieListScreen';
 
 const HomeStack = createNativeStackNavigator();
 const FavoriteStack = createNativeStackNavigator();
@@ -17,6 +18,7 @@ const Tab = createMaterialBottomTabNavigator();
 
 const HomeStackScreen = () => (
   <HomeStack.Navigator screenOptions={{headerShown: false}}>
+    <HomeStack.Screen name="MovieList" component={MovieListScreen} />
     <HomeStack.Screen name="Home" component={HomeScreen} />
     <HomeStack.Screen name="Detail" component={DetailScreen} />
   </HomeStack.Navigator>

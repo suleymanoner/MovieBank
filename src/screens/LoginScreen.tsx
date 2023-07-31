@@ -17,6 +17,7 @@ import {StackNavigationProp} from 'react-navigation-stack/lib/typescript/src/ven
 import {RootStackParams} from '../../App';
 import auth from '@react-native-firebase/auth';
 import {useIsFocused} from '@react-navigation/native';
+import {showIndicator} from '../utils/showIndicator';
 
 interface LoginScreenProps {}
 
@@ -29,7 +30,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
     if (user?.email) {
       navigation.navigate('BottomTabStack');
     }
-  }, [user]);
+  });
 
   useEffect(() => {
     if (!isFocused) {
@@ -48,17 +49,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordAgain, setPasswordAgain] = useState('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const login = async () => {
     if (email.length === 0 || password.length === 0) {
       showToast('Please fill all blanks!');
     } else {
+      setIsLoading(true);
       const success = await onUserLogin(email, password);
       if (success) {
         navigation.navigate('BottomTabStack');
       } else {
         console.log('Login failed!');
       }
+      setIsLoading(false);
     }
   };
 
@@ -73,12 +77,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
     } else if (password !== passwordAgain) {
       showToast('Passwords are not matched!');
     } else {
+      setIsLoading(true);
       const success = await onUserSignUp(name, surname, email, password);
       if (success) {
         navigation.navigate('BottomTabStack');
       } else {
         console.log('Signup failed');
       }
+      setIsLoading(false);
     }
   };
 
@@ -107,6 +113,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({}) => {
       </View>
       <ScrollView>
         <View style={styles.input_container}>
+          {isLoading ? showIndicator() : <></>}
           {isSignUp ? (
             <>
               <TextField
