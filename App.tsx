@@ -8,6 +8,7 @@ import Splash from './src/screens/SplashScreen';
 import {RootSiblingParent} from 'react-native-root-siblings';
 import {LoginScreen} from './src/screens/LoginScreen';
 import {ForgotPasswordScreen} from './src/screens/ForgotPasswordScreen';
+import {FirstScreen} from './src/screens/FirstScreen';
 
 export type RootStackParams = {
   LoginStack: any;
@@ -18,6 +19,7 @@ const LoginStack = createNativeStackNavigator();
 
 const LoginStackScreens = () => (
   <LoginStack.Navigator screenOptions={{headerShown: false}}>
+    <LoginStack.Screen name="FirstPage" component={FirstScreen} />
     <LoginStack.Screen name="LoginPage" component={LoginScreen} />
     <LoginStack.Screen
       name="ForgotPasswordPage"
