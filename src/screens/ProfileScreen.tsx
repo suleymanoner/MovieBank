@@ -11,16 +11,15 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {BACKGROUND_COLOR, BTN_COLOR, handleError} from '../utils/Config';
 import {ButtonWithIcon} from '../components/ButtonWithIcon';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {onUserLogout} from '../redux/actions/userActions';
 import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
 import {showToast} from '../utils/showToast';
-import {utils} from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
 import {TextField} from '../components/TextField';
 import moment from 'moment';
+import {showIndicator} from '../utils/showIndicator';
 
 interface ProfileScreenProps {
   navigation: any;
@@ -37,6 +36,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   const [oldPassword, setOldPassword] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
   const [newPassAgain, setNewPassAgain] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const reference = storage().ref(auth().currentUser?.email!);
 
   const getPhoto = async () => {
@@ -55,8 +55,11 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   };
 
   useEffect(() => {
-    getPhoto();
     getuser(auth().currentUser?.email!);
+  }, [auth().currentUser]);
+
+  useEffect(() => {
+    getPhoto();
   }, [photo]);
 
   const getuser = async (email: string) => {
@@ -88,7 +91,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
         text: 'OK',
         onPress: async () => {
           await onUserLogout();
-          navigation.navigate('LoginStack');
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'LoginStack'}],
+          });
         },
       },
     ]);
@@ -130,17 +136,20 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
       if (newPassword !== newPassAgain) {
         showToast('Passwords are not matched!');
       } else {
+        setIsLoading(true);
         auth()
           .currentUser?.reauthenticateWithCredential(emailCred)
           .then(async () => {
             await auth().currentUser?.updatePassword(newPassword);
             showToast('Password successfully changed!');
+            setIsLoading(false);
             setIsChangePass(!isChangePass);
             setOldPassword('');
             setNewPassword('');
             setNewPassAgain('');
           })
           .catch(err => {
+            setIsLoading(false);
             const msg = handleError(err.message);
             showToast(msg!);
             setOldPassword('');
@@ -188,6 +197,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
               value={newPassAgain}
               isSecure={true}
             />
+            {isLoading ? showIndicator() : <></>}
             <ButtonWithIcon
               btnColor={BTN_COLOR}
               height={50}

@@ -1,11 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, FlatList, Alert} from 'react-native';
-import {
-  ApplicationState,
-  MovieState,
-  onUnFavMovie,
-  onDeleteAllFavs,
-} from '../redux';
+import {ApplicationState, onUnFavMovie, onDeleteAllFavs} from '../redux';
 import {connect} from 'react-redux';
 import FavoriteCard from '../components/FavoriteCard';
 import {showToast} from '../utils/showToast';
@@ -16,14 +11,13 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
 interface FavoriteScreenProps {
-  movieReducer: MovieState;
+  navigation: any;
   unFavMov: Function;
   deleteAllFavMovies: Function;
 }
 
 const _FavoriteScreen: React.FC<FavoriteScreenProps> = ({
   navigation,
-  movieReducer,
   unFavMov,
   deleteAllFavMovies,
 }) => {
@@ -76,7 +70,7 @@ const _FavoriteScreen: React.FC<FavoriteScreenProps> = ({
     ]);
   };
 
-  const getFavMoviesFromFirebase = async () => {
+  const getFavMoviesFromFirebase = useCallback(async () => {
     try {
       const snapShot = await firestore().collection('favorites').get();
 
@@ -104,11 +98,11 @@ const _FavoriteScreen: React.FC<FavoriteScreenProps> = ({
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [favoriteMovies]);
 
   useEffect(() => {
     getFavMoviesFromFirebase();
-  }, []);
+  }, [getFavMoviesFromFirebase]);
 
   return (
     <View style={styles.container}>

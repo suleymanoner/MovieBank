@@ -49,7 +49,6 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
     }
   };
 
-
   return (
     <View style={styles.container}>
       <View
@@ -90,7 +89,7 @@ const styles = StyleSheet.create({
     backgroundColor: BACKGROUND_COLOR,
   },
   second_container: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     alignContent: 'center',
@@ -99,7 +98,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: 'Montserrat-SemiBold',
     color: 'black',
-    marginTop: 30,
     marginBottom: 30,
   },
   formContainer: {

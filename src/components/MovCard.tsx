@@ -3,12 +3,11 @@ import {
   View,
   Text,
   Image,
-  TouchableOpacity,
   StyleSheet,
   Dimensions,
   Pressable,
 } from 'react-native';
-import {BASE_IMG_URL, BTN_COLOR} from '../utils/Config';
+import {BASE_IMG_URL} from '../utils/Config';
 import moment from 'moment';
 import {Genre} from '../redux';
 import {GenreCard} from './GenreCard';
@@ -36,7 +35,8 @@ const MovCard: React.FC<MovCardNewProps> = ({
 
   const selectedGenres = genres
     .filter(genre => genre_ids.includes(genre.id))
-    .map(genre => genre.name);
+    .map(genre => genre.name)
+    .slice(0, 3);
 
   return (
     <Pressable style={styles.container} onPress={onPress}>
@@ -73,6 +73,7 @@ const MovCard: React.FC<MovCardNewProps> = ({
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: '#FBFFBF',
     borderRadius: 10,
     padding: 10,
@@ -94,11 +95,11 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   detailsContainer: {
+    flex: 3,
     alignItems: 'center',
-    maxWidth: Dimensions.get('screen').width / 1.6,
   },
   title: {
-    fontSize: 23,
+    fontSize: 20,
     marginBottom: 5,
     textAlign: 'center',
     color: 'black',
@@ -116,10 +117,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Regular',
   },
   genre_container: {
+    flex: 2,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginTop: 10,
   },
 });
 

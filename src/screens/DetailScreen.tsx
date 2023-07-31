@@ -7,7 +7,6 @@ import {
   ScrollView,
   Linking,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {
@@ -20,6 +19,7 @@ import {
 import {BACKGROUND_COLOR, BASE_IMG_URL, BTN_COLOR} from '../utils/Config';
 import {ButtonWithIcon} from '../components/ButtonWithIcon';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {showIndicator} from '../utils/showIndicator';
 interface DetailScreenProps {
   route: any;
   movieReducer: MovieState;
@@ -90,7 +90,11 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
   return indv_movie.poster_path ? (
     <View style={styles.container}>
       <Image
-        source={{uri: BASE_IMG_URL + indv_movie.backdrop_path}}
+        source={
+          indv_movie.backdrop_path
+            ? {uri: BASE_IMG_URL + indv_movie.backdrop_path}
+            : {uri: BASE_IMG_URL + indv_movie.poster_path}
+        }
         style={styles.image}
       />
       <ScrollView style={{backgroundColor: BACKGROUND_COLOR}}>
@@ -152,9 +156,7 @@ const _DetailScreen: React.FC<DetailScreenProps> = ({
       </ScrollView>
     </View>
   ) : (
-    <View style={styles.indicator}>
-      <ActivityIndicator size={'large'} color={BTN_COLOR} />
-    </View>
+    showIndicator()
   );
 };
 

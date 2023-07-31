@@ -5,7 +5,6 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
   Pressable,
 } from 'react-native';
 import {BASE_IMG_URL} from '../utils/Config';
