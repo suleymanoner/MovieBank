@@ -5,6 +5,17 @@ export interface Response {
   total_results: number;
 }
 
+export interface ResponseWithDates {
+  dates: {
+    maximum: string;
+    minimum: string;
+  };
+  page: number;
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
+}
+
 export interface Movie {
   adult: boolean;
   backdrop_path: string;
@@ -22,8 +33,21 @@ export interface Movie {
   vote_count: number;
 }
 
-export interface MovieState {
+export interface DateInResponse {
+  maximum: string;
+  minimum: string;
+}
+
+export interface MovieWithDates {
+  dates: DateInResponse;
   movies: Movie[];
+}
+
+export interface MovieState {
+  now_playing: MovieWithDates;
+  top_rated: Movie[];
+  popular: Movie[];
+  upcoming: MovieWithDates;
   indv_movie: IndvMovie;
   search_results: Movie[];
   fav_movies: Movie[];

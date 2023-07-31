@@ -4,18 +4,41 @@ import {
   API_KEY,
   BASE_URL,
   GENRE_URL,
+  NOW_PLAYING_URL,
   POPULAR_URL,
   SEARCH_URL,
+  TOP_RATED,
+  UPCOMING,
 } from '../../utils/Config';
-import {IndvMovie, Movie, Response, GenreResponse} from '../models';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  IndvMovie,
+  Movie,
+  Response,
+  GenreResponse,
+  ResponseWithDates,
+} from '../models';
 import {showToast} from '../../utils/showToast';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
-export interface GetMovies {
-  readonly type: 'GET_MOVIES';
+export interface GetNowPlayingMovies {
+  readonly type: 'GET_NOW_PLAYING_MOVIES';
+  payload: ResponseWithDates;
+}
+
+export interface GetTopRatedMovies {
+  readonly type: 'GET_TOP_RATED_MOVIES';
   payload: Response;
+}
+
+export interface GetPopularMovies {
+  readonly type: 'GET_POPULAR_MOVIES';
+  payload: Response;
+}
+
+export interface GetUpcomingMovies {
+  readonly type: 'GET_UPCOMING_MOVIES';
+  payload: ResponseWithDates;
 }
 
 export interface GetIndvMovie {
@@ -51,8 +74,15 @@ export interface DeleteAllFavs {
   readonly type: 'DELETE_ALL_FAVS';
 }
 
+export const onClearMovieArrays = () => ({
+  type: 'CLEAR_MOVIE_ARRAYS',
+});
+
 export type MovieAction =
-  | GetMovies
+  | GetNowPlayingMovies
+  | GetTopRatedMovies
+  | GetPopularMovies
+  | GetUpcomingMovies
   | GetIndvMovie
   | RemoveIndvMovie
   | GetSearchResults
@@ -61,14 +91,70 @@ export type MovieAction =
   | UnFavMovie
   | DeleteAllFavs;
 
-export const onGetMovies = (page: number) => {
+export const onGetNowPlayingMovies = (page: number) => {
+  return async (dispatch: Dispatch<MovieAction>) => {
+    try {
+      console.log('url : ' + NOW_PLAYING_URL + `&page=${page}`);
+      await axios
+        .get<ResponseWithDates>(NOW_PLAYING_URL + `&page=${page}`)
+        .then(response => {
+          dispatch({
+            type: 'GET_NOW_PLAYING_MOVIES',
+            payload: response.data,
+          });
+        })
+        .catch(err => console.log(err));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const onGetTopRatedMovies = (page: number) => {
+  return async (dispatch: Dispatch<MovieAction>) => {
+    try {
+      console.log(TOP_RATED + `&page=${page}`);
+      await axios
+        .get<Response>(TOP_RATED + `&page=${page}`)
+        .then(response => {
+          dispatch({
+            type: 'GET_TOP_RATED_MOVIES',
+            payload: response.data,
+          });
+        })
+        .catch(err => console.log(err));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const onGetPopularMovies = (page: number) => {
   return async (dispatch: Dispatch<MovieAction>) => {
     try {
       await axios
         .get<Response>(POPULAR_URL + `&page=${page}`)
         .then(response => {
           dispatch({
-            type: 'GET_MOVIES',
+            type: 'GET_POPULAR_MOVIES',
+            payload: response.data,
+          });
+        })
+        .catch(err => console.log(err));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const onGetUpcomingMovies = (page: number) => {
+  return async (dispatch: Dispatch<MovieAction>) => {
+    try {
+      await axios
+        .get<ResponseWithDates>(UPCOMING + `&page=${page}`)
+        .then(response => {
+          dispatch({
+            type: 'GET_UPCOMING_MOVIES',
             payload: response.data,
           });
         })
@@ -161,7 +247,7 @@ export const onFavMovie = (movie: Movie) => {
           .doc(auth().currentUser?.email! + movie.id)
           .set({
             id: movie.id,
-            title: movie.title,
+            title: movie.original_title,
             image: movie.poster_path,
           })
           .then(() => {
@@ -174,19 +260,6 @@ export const onFavMovie = (movie: Movie) => {
         });
         showToast(`${movie.original_title} faved!`);
       }
-
-      /*
-      const existingFavMovies = await AsyncStorage.getItem('fav_movies');
-      const favMovies = existingFavMovies ? JSON.parse(existingFavMovies) : [];
-
-      const isAlreadyFav = favMovies.some(mov => mov.id === movie.id);
-      if (isAlreadyFav) {
-        showToast(`${movie.original_title} is already faved!`);
-        return;
-      } else {
-        favMovies.push(movie);
-        await AsyncStorage.setItem('fav_movies', JSON.stringify(favMovies));
-      }*/
     } catch (error) {
       console.log(error);
     }
@@ -205,16 +278,6 @@ export const onUnFavMovie = (id: number) => {
         type: 'UN_FAV_MOVIE',
         payload: id,
       });
-
-      /*
-      const existingFavMovies = await AsyncStorage.getItem('fav_movies');
-      const favMovies = existingFavMovies ? JSON.parse(existingFavMovies) : [];
-      const index = favMovies.findIndex((movie: Movie) => movie.id === id);
-
-      if (index !== -1) {
-        favMovies.splice(index, 1);
-        await AsyncStorage.setItem('fav_movies', JSON.stringify(favMovies));
-      }*/
     } catch (error) {
       console.log(error);
     }
@@ -240,13 +303,6 @@ export const onDeleteAllFavs = () => {
       dispatch({
         type: 'DELETE_ALL_FAVS',
       });
-
-      /*
-      const existingFavMovies = await AsyncStorage.getItem('fav_movies');
-
-      if (existingFavMovies !== null) {
-        await AsyncStorage.setItem('fav_movies', JSON.stringify([]));
-      }*/
     } catch (error) {
       console.log(error);
     }
